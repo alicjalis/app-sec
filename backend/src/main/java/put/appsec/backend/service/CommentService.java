@@ -10,4 +10,6 @@ public interface CommentService {
     List<CommentDto> getAllCommentsByPostId(Integer id);
     List<CommentDto> getAllCommentsByUserId(Integer id);
     List<CommentDto> getAllCommentsByUsername(String username);
+    CommentDto createComment(CommentDto commentDto);
+    CommentDto updateComment(CommentDto commentDto);
 }

@@ -2,10 +2,7 @@ package put.appsec.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import put.appsec.backend.dto.CommentDto;
 import put.appsec.backend.service.CommentService;
 
@@ -44,5 +41,23 @@ public class CommentController {
     @GetMapping("/user/username/{username}")
     public ResponseEntity<List<CommentDto>> getAllCommentsByUsername(@PathVariable String username){
         return ResponseEntity.ok(commentService.getAllCommentsByUsername(username));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto commentDto){
+        CommentDto createdComment = commentService.createComment(commentDto);
+        if(createdComment == null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(createdComment);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<CommentDto> updateComment(@RequestBody CommentDto commentDto){
+        CommentDto updatedComment = commentService.updateComment(commentDto);
+        if(updatedComment == null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(updatedComment);
     }
 }

@@ -2,10 +2,7 @@ package put.appsec.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import put.appsec.backend.dto.PostDto;
 import put.appsec.backend.service.PostService;
 
@@ -42,5 +39,23 @@ public class PostController {
     public ResponseEntity<List<PostDto>> getPostsByUsername(@PathVariable String username) {
         List<PostDto> posts = postService.getPostsByUsername(username);
         return ResponseEntity.ok(posts);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
+        PostDto post = postService.createPost(postDto);
+        if (post == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(post);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto) {
+        PostDto post = postService.updatePost(postDto);
+        if (post == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(post);
     }
 }

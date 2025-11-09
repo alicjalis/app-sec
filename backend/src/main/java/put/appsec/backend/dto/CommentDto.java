@@ -42,13 +42,13 @@ public class CommentDto {
         entity.setUploadDate(this.uploadDate);
         entity.setIsDeleted(this.isDeleted);
 
-        User user = new User();
-        user.setId(this.userId);
-        entity.setUser(user);
-
         Post post = new Post();
         post.setId(this.postId);
         entity.setPost(post);
+
+        User user = new User();
+        user.setId(this.userId);
+        entity.setUser(user);
 
         return entity;
     }

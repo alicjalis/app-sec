@@ -9,4 +9,6 @@ public interface PostService {
     PostDto getPostById(Integer id);
     List<PostDto> getPostsByUserId(Integer id);
     List<PostDto> getPostsByUsername(String username);
+    PostDto createPost(PostDto postDto);
+    PostDto updatePost(PostDto postDto);
 }
