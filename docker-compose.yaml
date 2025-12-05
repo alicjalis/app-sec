@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+
+  database:
+    image: postgres:15
+    container_name: appsec-db
+    restart: always
+    environment:
+      POSTGRES_USER: appsec
+      POSTGRES_PASSWORD: appsec
+      POSTGRES_DB: appsecdb
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: appsec-backend
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/appsecdb
+      SPRING_DATASOURCE_USERNAME: appsec
+      SPRING_DATASOURCE_PASSWORD: appsec
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build: ./frontend
+    container_name: appsec-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+volumes:
+  dbdata:

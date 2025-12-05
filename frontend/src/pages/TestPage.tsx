@@ -9,7 +9,7 @@ function TestPage() {
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + '/test/all',
+            REQUEST_PREFIX + '/users/all',
             {
                 method: "GET",
                 headers: {
@@ -37,7 +37,7 @@ function TestPage() {
                         mt: 3,
                         padding: 1,
                         boxShadow: 3,
-                        borderRadius: 2,
+                        borderRadius: 10,
                         backgroundColor: "background.paper",
                     }}
                 >
