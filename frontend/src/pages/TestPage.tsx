@@ -9,7 +9,7 @@ function TestPage() {
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + '/users/all',
+            REQUEST_PREFIX + 'users/all',
             {
                 method: "GET",
                 headers: {

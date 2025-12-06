@@ -1,1 +1,1 @@
-export const REQUEST_PREFIX = "http://localhost:8010/proxy/";
+export const REQUEST_PREFIX = "http://localhost:8080/";
