@@ -1,10 +1,10 @@
 INSERT INTO users (username, password, user_type)
 VALUES
-    ('admin', 'admin', 'ADMIN'),
-    ('user1', 'user1', 'USER'),
-    ('user2', 'user2', 'USER'),
-    ('user3', 'user3', 'USER'),
-    ('user4', 'user4', 'USER');
+    ('admin', '$2a$10$I4mYgLioHqBRewLntcD9F.vX3WR5gjogQZ.kgmrkg0OJGhI59O61a', 'ADMIN'),
+    ('user1', '$2a$10$CRJP1RRNwzU0n1rE66Olk.xo0HO./Zw3rZ7zFoRrhBiJK8ko0eJxC', 'USER'),
+    ('user2', '$2a$10$bjwf/P0ESEuU0BnHs4itWOgGLjni2PBjcWwA1mXQ91P/AVirnpNZW', 'USER'),
+    ('user3', '$2a$10$J1YFsyzWW5pyf3geb/EQbOrmlpDCc0LAY.tTEnzg5ZJkxemWFqpJO', 'USER'),
+    ('user4', '$2a$10$vacYTXVtZG8ZlL82RgO93OKVG3dE0TMSyb6iuTxTylkEDACvO416K', 'USER');
 
 INSERT INTO posts (user_id, title, content_uri, likes_number, dislikes_number, is_deleted)
 VALUES

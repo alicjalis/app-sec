@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class UserDto {
     private Integer id;
     private String username;
-    private String password;
     private LocalDateTime registrationDate;
     private UserType userType;
     private List<PostDto> posts;
@@ -23,7 +22,6 @@ public class UserDto {
     public UserDto(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.password = user.getPassword();
         this.userType = user.getUserType();
         this.registrationDate = user.getRegistrationDate();
         this.userType = user.getUserType();
@@ -36,7 +34,6 @@ public class UserDto {
         User user = new User();
         user.setId(this.id);
         user.setUsername(this.username);
-        user.setPassword(this.password);
         user.setUserType(this.userType);
         user.setRegistrationDate(this.registrationDate);
 

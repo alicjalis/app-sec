@@ -53,7 +53,6 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         userToEditDto.setUsername(updatedUserDto.getUsername()!=null?updatedUserDto.getUsername():userToEditDto.getUsername());
-        userToEditDto.setPassword(updatedUserDto.getPassword()!=null?updatedUserDto.getPassword():userToEditDto.getPassword());
         userToEditDto.setUserType(updatedUserDto.getUserType()!=null?updatedUserDto.getUserType():userToEditDto.getUserType());
 
         savedEntity = userRepository.save(userToEditDto.toEntity());
