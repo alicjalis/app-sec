@@ -5,8 +5,10 @@ import {Container} from "@mui/material";
 import TopBarComponent from "./components/TopBarComponent.tsx";
 import RegistrationPage from "./pages/RegistrationPage.tsx";
 
+
 function App() {
     return (
+
         <Container>
             <TopBarComponent />
             <Routes>
