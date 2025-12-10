@@ -48,7 +48,7 @@ function TestPage() {
                         <strong>Username:</strong> {user.username}
                     </Typography>
                     <Typography variant="body2">
-                        <strong>Password:</strong> {user.password}
+                        <strong>Email:</strong> {user.email}
                     </Typography>
                 </Card>
             ))}

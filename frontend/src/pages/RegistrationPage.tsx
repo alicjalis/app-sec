@@ -5,6 +5,7 @@ import {useState} from "react";
 
 type FormData = {
     username: string;
+    email: string;
     password: string;
     confirmPassword: string;
 };
@@ -65,7 +66,7 @@ function RegistrationPage() {
                         (｡◕‿‿◕｡)
                     </Typography>
                     <Typography variant="body1">
-                        You can now log in.
+                        You can now log in. Check your email to confirm it.
                     </Typography>
                 </Box>
             ) : (
@@ -96,6 +97,21 @@ function RegistrationPage() {
                         required
                         error={!!errors.username}
                         helperText={errors.username ? errors.username.message : null}
+                    />
+
+                    <TextField
+                        label="Email"
+                        {...register("email", {
+                            required:"Type in email",
+
+                            pattern: {
+                                value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                                message: "Invalid email"
+                            }
+                        })}
+                        required
+                        error={!!errors.email}
+                        helperText={errors.email ? errors.email.message : null}
                     />
 
                     {/* PASSWORD */}

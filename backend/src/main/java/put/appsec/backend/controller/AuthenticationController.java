@@ -2,9 +2,7 @@ package put.appsec.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import put.appsec.backend.dto.LoginDto;
 import put.appsec.backend.dto.UserDto;
 import put.appsec.backend.security.AuthenticationService;
@@ -21,5 +19,14 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(createdUser);
+    }
+
+    @GetMapping("/confirm-account")
+    public ResponseEntity<Boolean> confirmAccount(@RequestParam("token") String token) {
+        Boolean accountConfirmed = authenticationService.checkToken(token);
+        if (accountConfirmed) {
+            return ResponseEntity.ok(Boolean.TRUE);
+        }
+        return ResponseEntity.ok(Boolean.FALSE);
     }
 }

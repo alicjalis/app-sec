@@ -19,13 +19,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String username;
+    private String email;
     private String password;
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type")
     private UserType userType;
-
+    private Boolean enabled;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Post> posts;
