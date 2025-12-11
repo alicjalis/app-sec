@@ -35,7 +35,7 @@ function RegistrationPage() {
         const { confirmPassword, ...dataToSend } = data;
 
         fetch(
-            REQUEST_PREFIX + 'register',
+            REQUEST_PREFIX + 'auth/register',
             {
                 method: "POST",
                 headers: {

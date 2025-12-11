@@ -3,6 +3,9 @@ package put.appsec.backend.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import put.appsec.backend.dto.LoginDto;
@@ -20,10 +23,16 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
     private final PasswordEncoder encoder;
     private final JavaMailSender javaMailSender;
+
+    public Boolean checkMatch (CharSequence rawPassword, String encodedPassword) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(rawPassword, encodedPassword);
+    }
 
     public UserDto register(LoginDto loginDto) {
         User user = new User();
@@ -47,7 +56,7 @@ public class AuthenticationService {
         mailMessage.setFrom("noreply@appsecmemes.com");
         mailMessage.setSubject("Confirm email address");
         mailMessage.setText("Hi, " + user.getUsername() + "!\nClick here to confirm your email: "
-                + "http://localhost:8080/confirm-account?token=" + savedToken.getToken());
+                + "http://localhost:8080/auth/confirm-account?token=" + savedToken.getToken());
         javaMailSender.send(mailMessage);
 
         return new UserDto(savedEntity);
@@ -62,5 +71,16 @@ public class AuthenticationService {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    public User authenticatePerson(LoginDto input) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        input.getUsername(),
+                        input.getPassword()
+                )
+        );
+        return userRepository.findByUsername(input.getUsername())
+                .orElseThrow();
     }
 }

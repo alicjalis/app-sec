@@ -4,13 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.appsec.backend.dto.LoginDto;
+import put.appsec.backend.dto.LoginResponseDto;
 import put.appsec.backend.dto.UserDto;
+import put.appsec.backend.entity.User;
+import put.appsec.backend.enums.UserType;
 import put.appsec.backend.security.AuthenticationService;
+import put.appsec.backend.security.JwtService;
 
 @RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody LoginDto loginDto) {
@@ -28,5 +34,23 @@ public class AuthenticationController {
             return ResponseEntity.ok(Boolean.TRUE);
         }
         return ResponseEntity.ok(Boolean.FALSE);
+    }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public ResponseEntity<LoginResponseDto> authenticate(@RequestBody LoginDto loginUserDto) {
+        User user = authenticationService.authenticatePerson(loginUserDto);
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        String jwtToken = jwtService.generateToken(user);
+        UserType userType = user.getUserType();
+
+        LoginResponseDto loginResponse = new LoginResponseDto();
+        loginResponse.setToken(jwtToken);
+        loginResponse.setExpiresIn(jwtService.getExpirationTime());
+        loginResponse.setUserType(userType);
+
+        return ResponseEntity.ok(loginResponse);
     }
 }
