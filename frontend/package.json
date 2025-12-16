@@ -19,13 +19,16 @@
     "react-cookie": "^8.0.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.68.0",
-    "react-router-dom": "^7.9.5"
+    "react-password-strength-bar": "^0.4.1",
+    "react-router-dom": "^7.9.5",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/zxcvbn": "^4.4.5",
     "@vitejs/plugin-react": "^5.0.4",
     "concurrently": "^9.2.1",
     "eslint": "^9.36.0",

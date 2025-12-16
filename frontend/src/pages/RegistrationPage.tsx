@@ -2,6 +2,9 @@ import {Box, Button, TextField, Typography} from "@mui/material";
 import {useForm, type SubmitHandler} from "react-hook-form";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {useState} from "react";
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter.tsx';
+import FillTestDataButton from "../components/FillTestDataButton.tsx";
+import zxcvbn from "zxcvbn";
 
 type FormData = {
     username: string;
@@ -10,25 +13,24 @@ type FormData = {
     confirmPassword: string;
 };
 
+
+const MIN_PASSWORD_STRENGTH_SCORE = 2;
+
+
+
 function RegistrationPage() {
     const {
         register,
         handleSubmit,
         formState: { errors },
         watch,
-        getValues
+        getValues,
+        setValue,
+        setFocus
     } = useForm<FormData>();
 
     const passwordValue = watch("password");
-    const [isPasswordFocused, setIsPasswordFocused] = useState(false);
     const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
-
-    const validationCriteria = {
-        lowercase: /[a-z]/.test(passwordValue),
-        uppercase: /[A-Z]/.test(passwordValue),
-        number: /[0-9]/.test(passwordValue),
-        minLength: passwordValue ? passwordValue.length >= 8 : false,
-    };
 
     const onSubmit: SubmitHandler<FormData> = (data) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,10 +77,9 @@ function RegistrationPage() {
                     onSubmit={handleSubmit(onSubmit)}
                     sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 300 }}
                 >
-                    {/* TITLE */}
                     <Typography variant="h5" textAlign="center">Register</Typography>
 
-                    {/* USERNAME */}
+                    {/*username*/}
                     <TextField
                         label="Username"
                         {...register("username", {
@@ -99,6 +100,7 @@ function RegistrationPage() {
                         helperText={errors.username ? errors.username.message : null}
                     />
 
+                    {/*email*/}
                     <TextField
                         label="Email"
                         {...register("email", {
@@ -114,33 +116,32 @@ function RegistrationPage() {
                         helperText={errors.email ? errors.email.message : null}
                     />
 
-                    {/* PASSWORD */}
                     <TextField
                         label="Password"
                         type="password"
                         {...register("password", {
                             required: "Password is required",
-                            minLength: {
-                                value: 8,
-                                message: "Password must have at least 8 characters"
-                            },
-                            pattern: {
-                                value: /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/,
-                                message: "Password must contain lowercase, uppercase, and a number"
-                            },
-                            validate: (value) =>
-                                !/[<>&'"`]|script|select|union|drop|insert/i.test(value) ||
-                                "Password cannot have these special characters"
-
+                            validate: (value) => {
+                                if (!value) return true;
+                                const result = zxcvbn(value);
+                                if (result.score < MIN_PASSWORD_STRENGTH_SCORE) {
+                                    return `Password strength is too low.`;
+                                }
+                                return true;
+                            }
                         })}
                         required
                         error={!!errors.password}
                         helperText={errors.password ? errors.password.message : null}
-                        onFocus={() => setIsPasswordFocused(true)}
-                        onBlur={() => setIsPasswordFocused(false)}
                     />
 
-                    {/* PASSWORD CONFIRMATION */}
+                    {passwordValue && (
+                        <Box sx={{ mt: -1.5, mb: 1 }}>
+                            <PasswordStrengthMeter password={passwordValue} />
+                        </Box>
+                    )}
+
+                    {/*password confirmation*/}
                     <TextField
                         label="Confirm Password"
                         type="password"
@@ -154,50 +155,11 @@ function RegistrationPage() {
                         helperText={errors.confirmPassword ? errors.confirmPassword.message : null}
                     />
 
-                    {/* PASSWORD RULES */}
-                    <Box
-                        sx={{
-                            mt: 0,
-                            p: 2,
-                            border: '1px solid #ccc',
-                            borderRadius: 1,
-                            visibility: isPasswordFocused ? 'visible' : 'hidden',
-                            opacity: isPasswordFocused ? 1 : 0,
-                            transition: 'opacity 0.3s',
-                        }}
-                    >
-                        <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                            Password must contain:
-                        </Typography>
+                    <FillTestDataButton
+                        setValue={setValue}
+                        setFocus={setFocus}
+                    />
 
-                        {Object.entries(validationCriteria).map(([key, isSatisfied]) => (
-                            <Box key={key} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                                <Typography
-                                    component="span"
-                                    sx={{
-                                        color: isSatisfied ? 'green' : 'red',
-                                        mr: 1,
-                                        fontWeight: 'bold'
-                                    }}
-                                >
-                                    {isSatisfied ? '✓' : '✗'}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ color: isSatisfied ? 'green' : 'red' }}
-                                >
-                                    {
-                                        key === 'lowercase' ? 'A lowercase letter' :
-                                            key === 'uppercase' ? 'A capital (uppercase) letter' :
-                                                key === 'number' ? 'A number' :
-                                                    'Minimum 8 characters'
-                                    }
-                                </Typography>
-                            </Box>
-                        ))}
-                    </Box>
-
-                    {/* SUBMIT */}
                     <Button type="submit" variant="contained" color="primary">
                         Register
                     </Button>
