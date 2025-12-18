@@ -11,35 +11,37 @@ function TopBarComponent(){
     return (
         <AppBar position="fixed" color="primary" className="shadow-lg w-full top-0 left-0">
             <Toolbar className="px-6 flex justify-between items-center">
-
                 <Typography
                     variant="h6"
                     component="div"
-                    sx={{cursor: 'pointer'}}
-                    className="tracking-wide font-semibold "
+                    sx={{ cursor: 'pointer' }}
+                    className="tracking-wide font-semibold"
                     onClick={() => navigate('/')}
                 >
                     memes
                 </Typography>
 
                 <Box sx={{ flexGrow: 1 }} />
-                {cookie.logged == true && (
-                    <Button variant="contained" color="secondary" onClick={() => {ClearCookie(); navigate('/')}}>
-                        Logout
-                    </Button>
-                )}
 
-                {!isLoginPage && (
-                    <Button variant="contained" color="secondary" onClick={() => navigate('/login')}>
-                        Login
-                    </Button>
-                )}
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    {cookie.logged === true && (
+                        <Button variant="contained" color="secondary" onClick={() => { ClearCookie(); navigate('/') }}>
+                            Logout
+                        </Button>
+                    )}
 
-                {!isRegisterPage && (
-                    <Button variant="contained" color="secondary" onClick={() => navigate('/register')}>
-                        Register
-                    </Button>
-                )}
+                    {!isLoginPage && !cookie.logged && (
+                        <Button variant="contained" color="secondary" onClick={() => navigate('/login')}>
+                            Login
+                        </Button>
+                    )}
+
+                    {!isRegisterPage && !cookie.logged && (
+                        <Button variant="contained" color="secondary" onClick={() => navigate('/register')}>
+                            Register
+                        </Button>
+                    )}
+                </Box>
             </Toolbar>
         </AppBar>
     );

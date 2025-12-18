@@ -1,111 +1,130 @@
-import {Box, Button, TextField, Typography} from "@mui/material";
-import {useForm, type SubmitHandler} from "react-hook-form";
-import {REQUEST_PREFIX} from "../environment/Environment.tsx";
-import {GetCookie, SetCookie} from "../cookie/GetCookie.tsx";
-import type {Cookie} from "../cookie/Cookie";
-import {useNavigate} from "react-router-dom";
+import { Box, Button, TextField, Typography, Alert, CircularProgress } from "@mui/material";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { REQUEST_PREFIX } from "../environment/Environment.tsx";
+import { GetCookie, SetCookie } from "../cookie/GetCookie.tsx";
+import type { Cookie } from "../cookie/Cookie";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { handleApiError} from "../utils/errorHandler.ts";
+import { Link as RouterLink } from "react-router-dom";
+import { Link } from "@mui/material";
 
 type FormData = {
     username: string;
     password: string;
 };
 
-function RegistrationPage() {
+function LoginPage() {
     const {
         register,
-
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isSubmitting },
     } = useForm<FormData>();
+
     const cookie = GetCookie();
     const navigate = useNavigate();
 
+    // API errors
+    const [apiError, setApiError] = useState<string | null>(null);
 
-    const onSubmit: SubmitHandler<FormData> = (data) => {
+    const onSubmit: SubmitHandler<FormData> = async (data) => {
+        setApiError(null);
 
-        fetch(
-            REQUEST_PREFIX + 'auth/login',
-            {
+        try {
+            const response = await fetch(REQUEST_PREFIX + 'auth/login', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
                 },
                 body: JSON.stringify(data)
-            }
-        ).then(response => {
-            if (response.ok) {
+            });
 
-                return response.json();
+            if (!response.ok) {
+                const errorMessage = await handleApiError(response);
+                throw new Error(errorMessage);
             }
-        }).then(data => {
-            if (data !== undefined) {
-                const cookie: Cookie = {
-                    token: data.token,
-                    expiresIn: data.expiresIn,
-                    username: data.username,
-                    userType: data.userType,
+
+            const result = await response.json();
+
+            if (result) {
+                const newCookie: Cookie = {
+                    token: result.token,
+                    expiresIn: result.expiresIn,
+                    username: result.username,
+                    userType: result.userType,
                     logged: true
-                }
-                SetCookie(cookie);
-                navigate("/login");
+                };
+                SetCookie(newCookie);
+
+                setTimeout(() => navigate("/dashboard"), 1000);
             }
-        });
-    }
+        } catch (error: any) {
+            setApiError(error.message || "Failed to connect to the server.");
+        }
+    };
 
     return (
-        <Box
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 300, margin: '50px auto' }}
-        >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 300, margin: '50px auto' }}>
             {!cookie.logged ? (
                 <Box
                     component="form"
                     onSubmit={handleSubmit(onSubmit)}
-                    sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 300 }}
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                 >
-                    {/* TITLE */}
                     <Typography variant="h5" textAlign="center">Login</Typography>
 
-                    {/* USERNAME */}
+                    {apiError && <Alert severity="error">{apiError}</Alert>}
+
                     <TextField
                         label="Username"
                         {...register("username", {
-                            required:"Type in username",
+                            required: "Username is required",
+                            minLength: { value: 3, message: "Minimum 3 characters required" }
                         })}
-                        required
                         error={!!errors.username}
-                        helperText={errors.username ? errors.username.message : null}
+                        helperText={errors.username?.message}
+                        disabled={isSubmitting}
                     />
 
-                    {/* PASSWORD */}
                     <TextField
                         label="Password"
                         type="password"
                         {...register("password", {
                             required: "Password is required",
+                            minLength: { value: 7, message: "Password must be at least 7 characters" }
                         })}
-                        required
                         error={!!errors.password}
-                        helperText={errors.password ? errors.password.message : null}
+                        helperText={errors.password?.message}
+                        disabled={isSubmitting}
                     />
 
-                    {/* SUBMIT */}
-                    <Button type="submit" variant="contained" color="primary">
-                        Login
+                    <Link
+                        component={RouterLink}
+                        to="/forgot-password"
+                        variant="body2"
+                        sx={{ alignSelf: 'flex-end', mt: -1 }}
+                    >
+                        Forgot password?
+                    </Link>
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={isSubmitting}
+                        startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+                    >
+                        {isSubmitting ? "Logging in..." : "Login"}
                     </Button>
                 </Box>
-            ) :(
+            ) : (
                 <Box sx={{ p: 3, border: '2px solid green', borderRadius: 2, textAlign: 'center' }}>
-                    <Typography variant="h5" color="green" sx={{ mb: 1 }}>
-                        Login Successful!
-                    </Typography>
-                    <Typography variant="h5" color="green" sx={{ mb: 1 }}>
-                        (｡◕‿‿◕｡)
-                    </Typography>
+                    <Typography variant="h5" color="green">Logged in successfully!</Typography>
+                    <Typography variant="h6">(｡◕‿‿◕｡)</Typography>
                 </Box>
             )}
-
         </Box>
     );
 }
 
-export default RegistrationPage;
+export default LoginPage;

@@ -1,10 +1,11 @@
-import {Box, Button, TextField, Typography} from "@mui/material";
+import {Alert, Box, Button, CircularProgress, TextField, Typography} from "@mui/material";
 import {useForm, type SubmitHandler} from "react-hook-form";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {useState} from "react";
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter.tsx';
 import FillTestDataButton from "../components/FillTestDataButton.tsx";
 import zxcvbn from "zxcvbn";
+import { handleApiError } from "../utils/errorHandler.ts";
 
 type FormData = {
     username: string;
@@ -22,7 +23,7 @@ function RegistrationPage() {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isSubmitting },
         watch,
         getValues,
         setValue,
@@ -32,27 +33,34 @@ function RegistrationPage() {
     const passwordValue = watch("password");
     const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
 
-    const onSubmit: SubmitHandler<FormData> = (data) => {
+    const [apiError, setApiError] = useState<string | null>(null);
+
+    const onSubmit: SubmitHandler<FormData> = async (data) => {
+        setApiError(null);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { confirmPassword, ...dataToSend } = data;
 
-        fetch(
-            REQUEST_PREFIX + 'auth/register',
-            {
+        try {
+            const response = await fetch(REQUEST_PREFIX + 'auth/register', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
                 },
                 body: JSON.stringify(dataToSend)
+            });
+
+            if (!response.ok) {
+                const errorMessage = await handleApiError(response);
+                throw new Error(errorMessage);
             }
-        ).then(response => {
-            if (response.ok) {
-                setIsRegistrationSuccessful(true);
-                return response.json();
-            }
-        }).then(data => {
-            console.log(data);
-        });
+
+            setIsRegistrationSuccessful(true);
+            const result = await response.json();
+            console.log("Success:", result);
+
+        } catch (error: any) {
+            setApiError(error.message || "An unexpected error occurred.");
+        }
     }
 
     return (
@@ -79,6 +87,8 @@ function RegistrationPage() {
                 >
                     <Typography variant="h5" textAlign="center">Register</Typography>
 
+                    {apiError && <Alert severity="error">{apiError}</Alert>}
+
                     {/*username*/}
                     <TextField
                         label="Username"
@@ -95,6 +105,7 @@ function RegistrationPage() {
                                 message: "Username can only have letters, numbers and underscore(_)"
                             }
                         })}
+                        disabled={isSubmitting}
                         required
                         error={!!errors.username}
                         helperText={errors.username ? errors.username.message : null}
@@ -111,6 +122,7 @@ function RegistrationPage() {
                                 message: "Invalid email"
                             }
                         })}
+                        disabled={isSubmitting}
                         required
                         error={!!errors.email}
                         helperText={errors.email ? errors.email.message : null}
@@ -125,11 +137,12 @@ function RegistrationPage() {
                                 if (!value) return true;
                                 const result = zxcvbn(value);
                                 if (result.score < MIN_PASSWORD_STRENGTH_SCORE) {
-                                    return `Password strength is too low.`;
+                                    return `Password strength must be a least medium.`;
                                 }
                                 return true;
                             }
                         })}
+                        disabled={isSubmitting}
                         required
                         error={!!errors.password}
                         helperText={errors.password ? errors.password.message : null}
@@ -150,6 +163,7 @@ function RegistrationPage() {
                             validate: (value) =>
                                 value === getValues('password') || "Passwords must be the same",
                         })}
+                        disabled={isSubmitting}
                         required
                         error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword ? errors.confirmPassword.message : null}
@@ -160,8 +174,8 @@ function RegistrationPage() {
                         setFocus={setFocus}
                     />
 
-                    <Button type="submit" variant="contained" color="primary">
-                        Register
+                    <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null} >
+                        {isSubmitting ? "Registering..." : "Register"}
                     </Button>
                 </Box>
             )}

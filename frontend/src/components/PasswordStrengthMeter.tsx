@@ -7,8 +7,9 @@ interface PasswordStrengthMeterProps {
 
 const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ password = '' }) => {
     const testResult = password ? zxcvbn(password) : { score: 0 };
+    const startNumber = testResult.score + 1;
 
-    const num: number = testResult.score * 100 / 4;
+    const num: number = startNumber * 100 / 5;
 
     const createPassLabel = (): string => {
         switch(testResult.score) {
@@ -17,7 +18,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ password 
             case 1:
                 return 'Weak';
             case 2:
-                return 'Fair';
+                return 'Medium';
             case 3:
                 return 'Good';
             case 4:
@@ -30,7 +31,7 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({ password 
     const funcProgressColor = (): string => {
         switch(testResult.score) {
             case 0:
-                return '#828282';
+                return '#ac1111';
             case 1:
                 return '#EA1111';
             case 2:
