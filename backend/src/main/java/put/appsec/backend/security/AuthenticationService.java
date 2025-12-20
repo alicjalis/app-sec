@@ -12,6 +12,7 @@ import put.appsec.backend.dto.LoginDto;
 import put.appsec.backend.dto.UserDto;
 import put.appsec.backend.entity.ConfirmationToken;
 import put.appsec.backend.entity.User;
+import put.appsec.backend.enums.ConfirmationRequestType;
 import put.appsec.backend.enums.UserType;
 import put.appsec.backend.repository.ConfirmationTokenRepository;
 import put.appsec.backend.repository.UserRepository;
@@ -48,7 +49,7 @@ public class AuthenticationService {
 
         User savedEntity = userRepository.save(user);
 
-        ConfirmationToken confirmationToken = new ConfirmationToken(user);
+        ConfirmationToken confirmationToken = new ConfirmationToken(user, ConfirmationRequestType.EMAIL);
         ConfirmationToken savedToken = confirmationTokenRepository.save(confirmationToken);
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -83,4 +84,24 @@ public class AuthenticationService {
         return userRepository.findByUsername(input.getUsername())
                 .orElseThrow();
     }
+
+
+    public Boolean sendResetPasswordEmail(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return Boolean.FALSE;
+        }
+        ConfirmationToken confirmationToken = new ConfirmationToken(user, ConfirmationRequestType.PASSWORD);
+        ConfirmationToken savedToken = confirmationTokenRepository.save(confirmationToken);
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setFrom("noreply@appsecmemes.com");
+        mailMessage.setSubject("Reset Password");
+        mailMessage.setText("Hi! ≽^•⩊•^≼ \nClick here to confirm your email: "
+                + "http://localhost:8080/auth/reset-password?token=" + savedToken.getToken());
+        javaMailSender.send(mailMessage);
+        return Boolean.TRUE;
+
+    }
+
 }
