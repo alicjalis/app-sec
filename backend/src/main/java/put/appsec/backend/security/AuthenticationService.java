@@ -54,7 +54,7 @@ public class AuthenticationService {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmail());
-        mailMessage.setFrom("noreply@appsecmemes.com");
+        mailMessage.setFrom("jakub.hologa@student.put.poznan.pl");
         mailMessage.setSubject("Confirm email address");
         mailMessage.setText("Hi, " + user.getUsername() + "!\nClick here to confirm your email: "
                 + "http://localhost:8080/auth/confirm-account?token=" + savedToken.getToken());
@@ -69,6 +69,7 @@ public class AuthenticationService {
             User user = confirmationToken.getUser();
             user.setEnabled(true);
             userRepository.save(user);
+            confirmationTokenRepository.delete(confirmationToken);
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
@@ -85,7 +86,6 @@ public class AuthenticationService {
                 .orElseThrow();
     }
 
-
     public Boolean sendResetPasswordEmail(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if(user == null) {
@@ -95,13 +95,25 @@ public class AuthenticationService {
         ConfirmationToken savedToken = confirmationTokenRepository.save(confirmationToken);
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
-        mailMessage.setFrom("noreply@appsecmemes.com");
+        mailMessage.setFrom("jakub.hologa@student.put.poznan.pl");
         mailMessage.setSubject("Reset Password");
-        mailMessage.setText("Hi! ≽^•⩊•^≼ \nClick here to confirm your email: "
-                + "http://localhost:8080/auth/reset-password?token=" + savedToken.getToken());
+        mailMessage.setText("Hi " + user.getUsername() + "! ≽^•⩊•^≼ \nClick here to reset your password: "
+                + "http://localhost:5173/reset-password?token=" + savedToken.getToken());
         javaMailSender.send(mailMessage);
         return Boolean.TRUE;
-
     }
 
+    public UserDto changePassword(LoginDto loginDto, String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(token);
+        if(confirmationToken == null) {
+            return null;
+        }
+        User user = confirmationToken.getUser();
+        user.setPassword(encoder.encode(loginDto.getPassword()));
+
+        User savedUser = userRepository.save(user);
+        confirmationTokenRepository.delete(confirmationToken);
+
+        return new UserDto(savedUser);
+    }
 }

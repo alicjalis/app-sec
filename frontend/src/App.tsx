@@ -6,6 +6,7 @@ import TopBarComponent from "./components/TopBarComponent.tsx";
 import RegistrationPage from "./pages/RegistrationPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PasswordResetPage from "./pages/PasswordResetPage.tsx";
 
 
 function App() {
@@ -58,6 +59,8 @@ _  /  / / _  /___  _  /  / / _  /___  ____/ /
                         <Route path={"/login"} element={<LoginPage/>} />
 
                         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+                        <Route path="/reset-password" element={<PasswordResetPage />} />
                     </Routes>
                 )}
             </Box>

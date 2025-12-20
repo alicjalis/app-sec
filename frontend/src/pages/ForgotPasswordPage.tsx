@@ -1,6 +1,8 @@
 import { Box, Button, TextField, Typography, Alert } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import {REQUEST_PREFIX} from "../environment/Environment.tsx";
+import {handleApiError} from "../utils/errorHandler.ts";
 
 type ForgotPasswordData = {
     email: string;
@@ -16,9 +18,29 @@ function ForgotPasswordPage() {
 
 
     const [isSent, setIsSent] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
 
-    const onSubmit = (data: ForgotPasswordData) => {
-        console.log("Email to reset password:", data.email);
+    const onSubmit = async (data: ForgotPasswordData) => {
+        const {...dataToSend } = data;
+
+        try {
+            const response = await fetch(REQUEST_PREFIX + 'auth/request-reset', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                body: JSON.stringify(dataToSend)
+            });
+
+            if (!response.ok) {
+                const errorMessage = await handleApiError(response);
+                throw new Error(errorMessage);
+            }
+
+
+        } catch (error: any) {
+            setApiError(error.message || "An unexpected error occurred.");
+        }
         setIsSent(true);
     };
 
@@ -30,6 +52,7 @@ function ForgotPasswordPage() {
                 Enter your email address and we'll send you a link to reset your password.
             </Typography>
 
+            {apiError && <Alert severity="error">{apiError}</Alert>}
 
             {isSent && (
                 <Alert severity="success">

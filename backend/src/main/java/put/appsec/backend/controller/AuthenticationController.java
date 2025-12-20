@@ -1,6 +1,7 @@
 package put.appsec.backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.appsec.backend.dto.LoginDto;
@@ -37,7 +38,6 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    @ResponseBody
     public ResponseEntity<LoginResponseDto> authenticate(@RequestBody LoginDto loginUserDto) {
         User user = authenticationService.authenticatePerson(loginUserDto);
         if (user == null) {
@@ -52,5 +52,20 @@ public class AuthenticationController {
         loginResponse.setUserType(userType);
 
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/request-reset")
+    public ResponseEntity<Boolean> requestReset(@RequestBody LoginDto loginUserDto) {
+        Boolean result = authenticationService.sendResetPasswordEmail(loginUserDto.getEmail());
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<UserDto> resetPassword(@RequestParam("token") String token, @RequestBody LoginDto loginUserDto) {
+        UserDto savedUser = authenticationService.changePassword(loginUserDto, token);
+        if (savedUser == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(savedUser);
     }
 }
