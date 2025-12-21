@@ -1,6 +1,9 @@
-import {AppBar, Box, Button, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import {useNavigate, useLocation} from "react-router-dom";
 import {ClearCookie, GetCookie} from "../cookie/GetCookie.tsx";
+import {useColorMode} from "../context/ColorModeContext.tsx";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
 
 function TopBarComponent(){
     const navigate = useNavigate();
@@ -8,6 +11,8 @@ function TopBarComponent(){
     const isRegisterPage = location.pathname === '/register';
     const isLoginPage = location.pathname === '/login';
     const cookie = GetCookie();
+    const { mode, toggleColorMode } = useColorMode();
+
     return (
         <AppBar position="fixed" color="primary" className="shadow-lg w-full top-0 left-0">
             <Toolbar className="px-6 flex justify-between items-center">
@@ -41,6 +46,11 @@ function TopBarComponent(){
                             Register
                         </Button>
                     )}
+
+                    <IconButton color="inherit" onClick={toggleColorMode}>
+                        {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </IconButton>
+
                 </Box>
             </Toolbar>
         </AppBar>

@@ -90,6 +90,7 @@ function RegistrationPage() {
                     {apiError && <Alert severity="error">{apiError}</Alert>}
 
                     {/*username*/}
+
                     <TextField
                         label="Username"
                         {...register("username", {
@@ -109,6 +110,11 @@ function RegistrationPage() {
                         required
                         error={!!errors.username}
                         helperText={errors.username ? errors.username.message : null}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: !!watch("username") || undefined
+                            }
+                        }}
                     />
 
                     {/*email*/}
@@ -126,6 +132,11 @@ function RegistrationPage() {
                         required
                         error={!!errors.email}
                         helperText={errors.email ? errors.email.message : null}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: !!watch("email") || undefined
+                            }
+                        }}
                     />
 
                     <TextField
@@ -146,6 +157,11 @@ function RegistrationPage() {
                         required
                         error={!!errors.password}
                         helperText={errors.password ? errors.password.message : null}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: !!watch("password") || undefined
+                            }
+                        }}
                     />
 
                     {passwordValue && (
@@ -167,6 +183,11 @@ function RegistrationPage() {
                         required
                         error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword ? errors.confirmPassword.message : null}
+                        slotProps={{
+                            inputLabel: {
+                                shrink: !!watch("password") || undefined
+                            }
+                        }}
                     />
 
                     <FillTestDataButton

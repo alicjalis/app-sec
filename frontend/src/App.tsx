@@ -1,5 +1,4 @@
 import {Route, Routes, useLocation} from "react-router-dom";
-import './App.css'
 import TestPage from "./pages/TestPage.tsx";
 import {Box, Typography} from "@mui/material";
 import TopBarComponent from "./components/TopBarComponent.tsx";
@@ -7,7 +6,6 @@ import RegistrationPage from "./pages/RegistrationPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PasswordResetPage from "./pages/PasswordResetPage.tsx";
-
 
 function App() {
     const location = useLocation();
@@ -40,15 +38,15 @@ function App() {
                     >
                         {/*goes hard B)))*/}
                         {`
-______  _________________  ___________________
-___   |/  /__  ____/__   |/  /__  ____/_  ___/
-__  /|_/ /__  __/  __  /|_/ /__  __/  _____ \\ 
-_  /  / / _  /___  _  /  / / _  /___  ____/ / 
-/_/  /_/  /_____/  /_/  /_/  /_____/  /____/  
-                                              
-                                       
-       (=^･ｪ･^=))ﾉ彡☆
-`}
+    ______  _________________  ___________________
+    ___   |/  /__  ____/__   |/  /__  ____/_  ___/
+    __  /|_/ /__  __/  __  /|_/ /__  __/  _____ \\ 
+    _  /  / / _  /___  _  /  / / _  /___  ____/ / 
+    /_/  /_/  /_____/  /_/  /_/  /_____/  /____/  
+                                                  
+                                           
+           (=^･ｪ･^=))ﾉ彡☆
+    `}
                     </Typography>
                 ) : (
                     <Routes>
