@@ -6,6 +6,7 @@ import RegistrationPage from "./pages/RegistrationPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PasswordResetPage from "./pages/PasswordResetPage.tsx";
+import ConfirmEmailPage from "./pages/ConfirmEmailPage.tsx";
 
 function App() {
     const location = useLocation();
@@ -59,6 +60,8 @@ function App() {
                         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
                         <Route path="/reset-password" element={<PasswordResetPage />} />
+
+                        <Route path="/confirm-email" element={<ConfirmEmailPage />} />
                     </Routes>
                 )}
             </Box>

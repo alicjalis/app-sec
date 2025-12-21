@@ -57,7 +57,7 @@ public class AuthenticationService {
         mailMessage.setFrom("jakub.hologa@student.put.poznan.pl");
         mailMessage.setSubject("Confirm email address");
         mailMessage.setText("Hi, " + user.getUsername() + "!\nClick here to confirm your email: "
-                + "http://localhost:8080/auth/confirm-account?token=" + savedToken.getToken());
+                + "http://localhost:5173/confirm-email?token=" + savedToken.getToken());
         javaMailSender.send(mailMessage);
 
         return new UserDto(savedEntity);
@@ -69,7 +69,7 @@ public class AuthenticationService {
             User user = confirmationToken.getUser();
             user.setEnabled(true);
             userRepository.save(user);
-            confirmationTokenRepository.delete(confirmationToken);
+            //confirmationTokenRepository.delete(confirmationToken);
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
