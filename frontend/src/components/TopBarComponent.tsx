@@ -1,9 +1,10 @@
 import {AppBar, Box, Button, IconButton, Toolbar, Typography} from "@mui/material";
 import {useNavigate, useLocation} from "react-router-dom";
-import {ClearCookie, GetCookie} from "../cookie/GetCookie.tsx";
+import {GetCookie} from "../cookie/GetCookie.tsx";
 import {useColorMode} from "../context/ColorModeContext.tsx";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
+import { UserProfileMenu } from "./UserProfileButtonComponent.tsx";
 
 function TopBarComponent(){
     const navigate = useNavigate();
@@ -28,12 +29,15 @@ function TopBarComponent(){
 
                 <Box sx={{ flexGrow: 1 }} />
 
+                {cookie.logged && (
+                    <Typography variant="h6" component="div" ml={1}>
+                        Welcome {cookie.username}!
+                    </Typography>
+                )}
+
+                <Box sx={{ flexGrow: 1 }} />
+
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                    {cookie.logged === true && (
-                        <Button variant="contained" color="secondary" onClick={() => { ClearCookie(); navigate('/') }}>
-                            Logout
-                        </Button>
-                    )}
 
                     {!isLoginPage && !cookie.logged && (
                         <Button variant="contained" color="secondary" onClick={() => navigate('/login')}>
@@ -47,9 +51,11 @@ function TopBarComponent(){
                         </Button>
                     )}
 
-                    <IconButton color="inherit" onClick={toggleColorMode}>
+                    <IconButton color="inherit" onClick={toggleColorMode} >
                         {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
                     </IconButton>
+
+                    {cookie.logged && <UserProfileMenu />}
 
                 </Box>
             </Toolbar>

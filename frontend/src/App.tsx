@@ -1,20 +1,23 @@
 import {Route, Routes, useLocation} from "react-router-dom";
-import TestPage from "./pages/TestPage.tsx";
-import {Box, Typography} from "@mui/material";
+import {Box, Toolbar, Typography} from "@mui/material";
 import TopBarComponent from "./components/TopBarComponent.tsx";
 import RegistrationPage from "./pages/RegistrationPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PasswordResetPage from "./pages/PasswordResetPage.tsx";
 import ConfirmEmailPage from "./pages/ConfirmEmailPage.tsx";
+import UserProfilePage from "./pages/UserProfilePage.tsx";
+import MainFeedPage from "./pages/MainFeedPage.tsx";
 
 function App() {
     const location = useLocation();
-    const isHomePage = location.pathname === '/';
+    const isHomePage = location.pathname === '/homepage';
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <TopBarComponent />
+
+            <Toolbar />
 
             <Box
                 sx={{
@@ -51,7 +54,7 @@ function App() {
                     </Typography>
                 ) : (
                     <Routes>
-                        <Route path={"/"} element={<TestPage/>} />
+                        <Route path={"/"} element={<MainFeedPage/>} />
 
                         <Route path={"/register"} element={<RegistrationPage/>} />
 
@@ -62,6 +65,8 @@ function App() {
                         <Route path="/reset-password" element={<PasswordResetPage />} />
 
                         <Route path="/confirm-email" element={<ConfirmEmailPage />} />
+
+                        <Route path={"/user/:username"} element={<UserProfilePage />} />
                     </Routes>
                 )}
             </Box>

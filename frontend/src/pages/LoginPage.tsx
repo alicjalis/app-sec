@@ -56,7 +56,7 @@ function LoginPage() {
                 };
                 SetCookie(newCookie);
 
-                setTimeout(() => navigate("/dashboard"), 1000);
+                setTimeout(() => navigate("/"), 1000);
             }
         } catch (error: any) {
             setApiError(error.message || "Failed to connect to the server.");
@@ -91,7 +91,7 @@ function LoginPage() {
                         type="password"
                         {...register("password", {
                             required: "Password is required",
-                            minLength: { value: 7, message: "Password must be at least 7 characters" }
+                            minLength: { value: 5, message: "Password must be at least 5 characters" }
                         })}
                         error={!!errors.password}
                         helperText={errors.password?.message}

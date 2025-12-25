@@ -22,6 +22,7 @@ public class PostDto {
     private Boolean isDeleted;
 
     private Integer userId;
+    private String author;
     private List<CommentDto> comments;
 
     public PostDto(Post post) {
@@ -34,6 +35,7 @@ public class PostDto {
         this.isDeleted = post.getIsDeleted();
 
         this.userId = post.getUser().getId();
+        this.author = post.getUser().getUsername();
 
         List<CommentDto> comments = new ArrayList<>();
         post.getComments().forEach(comment -> comments.add(new CommentDto(comment)));
