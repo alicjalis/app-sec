@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import put.appsec.backend.dto.CommentDto;
+import put.appsec.backend.dto.PostDto;
 import put.appsec.backend.entity.Comment;
 import put.appsec.backend.repository.CommentRepository;
 import put.appsec.backend.service.CommentService;
@@ -19,36 +20,29 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
 
     @Override
-    public List<CommentDto> getAllComments() {
-        return commentRepository.findAll().stream().map(CommentDto::new).collect(Collectors.toList());
+    public List<CommentDto> getAllComments(String viewerUsername) {
+        return commentRepository.findAll().stream().map(comment -> new CommentDto(comment, viewerUsername)).collect(Collectors.toList());
     }
 
     @Override
-    public CommentDto getCommentById(Integer id) {
-        return commentRepository.findById(id).map(CommentDto::new).orElse(null);
+    public CommentDto getCommentById(Integer id, String viewerUsername) {
+        return commentRepository.findById(id).map(comment -> new CommentDto(comment, viewerUsername)).orElse(null);
     }
 
     @Override
-    public List<CommentDto> getAllCommentsByPostId(Integer id) {
-        return commentRepository.findAllByPostId(id).stream().map(CommentDto::new).collect(Collectors.toList());
+    public List<CommentDto> getAllCommentsByPostId(Integer id, String viewerUsername) {
+        return commentRepository.findAllByPostId(id).stream().map(comment -> new CommentDto(comment, viewerUsername)).collect(Collectors.toList());
     }
 
     @Override
-    public List<CommentDto> getAllCommentsByUserId(Integer id) {
-        return commentRepository.findAllByUserId(id).stream().map(CommentDto::new).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<CommentDto> getAllCommentsByUsername(String username) {
-        return commentRepository.findAllByUserUsername(username).stream().map(CommentDto::new).collect(Collectors.toList());
+    public List<CommentDto> getAllCommentsByUsername(String username, String viewerUsername) {
+        return commentRepository.findAllByUserUsername(username).stream().map(comment -> new CommentDto(comment, viewerUsername)).collect(Collectors.toList());
     }
 
     @Override
     public CommentDto createComment(CommentDto commentDto) {
         commentDto.setId(null);
         commentDto.setUploadDate(LocalDateTime.now());
-        commentDto.setLikesNumber(0);
-        commentDto.setDislikesNumber(0);
         commentDto.setIsDeleted(false);
         Comment entity = commentDto.toEntity();
         Comment savedEntity = commentRepository.save(entity);
@@ -57,14 +51,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto updateComment(CommentDto updatedCommentDto) {
-        CommentDto commentToEdit = getCommentById(updatedCommentDto.getId());
+        CommentDto commentToEdit = getCommentById(updatedCommentDto.getId(), null);
         Comment savedEntity;
         if (commentToEdit == null) {
             return null;
         }
         commentToEdit.setContent(updatedCommentDto.getContent()!=null?updatedCommentDto.getContent():commentToEdit.getContent());
-        commentToEdit.setLikesNumber(updatedCommentDto.getLikesNumber()!=null?updatedCommentDto.getLikesNumber():commentToEdit.getLikesNumber());
-        commentToEdit.setDislikesNumber(updatedCommentDto.getDislikesNumber()!=null?updatedCommentDto.getDislikesNumber():commentToEdit.getDislikesNumber());
         commentToEdit.setIsDeleted(updatedCommentDto.getIsDeleted());
 
         savedEntity = commentRepository.save(commentToEdit.toEntity());

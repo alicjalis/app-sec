@@ -20,10 +20,6 @@ public class Post {
     private String title;
     @Column(name = "content_uri")
     private String contentUri;
-    @Column(name = "likes_number")
-    private Integer likesNumber;
-    @Column(name = "dislikes_number")
-    private Integer dislikesNumber;
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
     @Column(name = "is_deleted")
@@ -35,4 +31,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<PostReaction> postReactions;
 }

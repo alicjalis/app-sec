@@ -15,32 +15,27 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<CommentDto>> getAllComments() {
-        return ResponseEntity.ok(commentService.getAllComments());
+    public ResponseEntity<List<CommentDto>> getAllComments(@RequestParam(value = "username", defaultValue = "") String viewerUsername) {
+        return ResponseEntity.ok(commentService.getAllComments(viewerUsername));
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<CommentDto> getCommentById(@PathVariable Integer id){
-        CommentDto comment = commentService.getCommentById(id);
+    public ResponseEntity<CommentDto> getCommentById(@PathVariable Integer id, @RequestParam(value = "username", defaultValue = "") String viewerUsername){
+        CommentDto comment = commentService.getCommentById(id, viewerUsername);
         if(comment == null){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(comment);
     }
 
-    @GetMapping("/post/id/{id}")
-    public ResponseEntity<List<CommentDto>> getAllCommentsByPostId(@PathVariable Integer id){
-        return ResponseEntity.ok(commentService.getAllCommentsByPostId(id));
+    @GetMapping("/post/{id}")
+    public ResponseEntity<List<CommentDto>> getAllCommentsByPostId(@PathVariable Integer id, @RequestParam(value = "username", defaultValue = "") String viewerUsername){
+        return ResponseEntity.ok(commentService.getAllCommentsByPostId(id, viewerUsername));
     }
 
-    @GetMapping("/user/id/{id}")
-    public ResponseEntity<List<CommentDto>> getAllCommentsByUserId(@PathVariable Integer id){
-        return ResponseEntity.ok(commentService.getAllCommentsByUserId(id));
-    }
-
-    @GetMapping("/user/username/{username}")
-    public ResponseEntity<List<CommentDto>> getAllCommentsByUsername(@PathVariable String username){
-        return ResponseEntity.ok(commentService.getAllCommentsByUsername(username));
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<CommentDto>> getAllCommentsByUsername(@PathVariable String username, @RequestParam(value = "username", defaultValue = "") String viewerUsername){
+        return ResponseEntity.ok(commentService.getAllCommentsByUsername(username, viewerUsername));
     }
 
     @PostMapping("/create")

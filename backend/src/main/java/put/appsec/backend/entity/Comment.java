@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,10 +18,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String content;
-    @Column(name = "likes_number")
-    private Integer likesNumber;
-    @Column(name = "dislikes_number")
-    private Integer dislikesNumber;
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
     @Column(name = "is_deleted")
@@ -33,4 +30,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
+    private List<CommentReaction> commentReactions;
 }

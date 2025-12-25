@@ -15,29 +15,23 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        List<PostDto> allPosts = postService.getAllPosts();
+    public ResponseEntity<List<PostDto>> getAllPosts(@RequestParam(value = "username", defaultValue = "") String viewerUsername) {
+        List<PostDto> allPosts = postService.getAllPosts(viewerUsername);
         return ResponseEntity.ok(allPosts);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Integer id) {
-        PostDto post = postService.getPostById(id);
+    public ResponseEntity<PostDto> getPostById(@PathVariable Integer id, @RequestParam(value = "username", defaultValue = "") String viewerUsername) {
+        PostDto post = postService.getPostById(id, viewerUsername);
         if (post == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(post);
     }
 
-    @GetMapping("/user/id/{id}")
-    public ResponseEntity<List<PostDto>> getPostsByUserId(@PathVariable Integer id) {
-        List<PostDto> posts = postService.getPostsByUserId(id);
-        return ResponseEntity.ok(posts);
-    }
-
-    @GetMapping("/user/username/{username}")
-    public ResponseEntity<List<PostDto>> getPostsByUsername(@PathVariable String username) {
-        List<PostDto> posts = postService.getPostsByUsername(username);
+    @GetMapping("/user/{username}")
+    public ResponseEntity<List<PostDto>> getPostsByUsername(@PathVariable String username, @RequestParam(value = "username", defaultValue = "") String viewerUsername) {
+        List<PostDto> posts = postService.getPostsByUsername(username, viewerUsername);
         return ResponseEntity.ok(posts);
     }
 

@@ -5,10 +5,9 @@ import put.appsec.backend.dto.PostDto;
 import java.util.List;
 
 public interface PostService {
-    List<PostDto> getAllPosts();
-    PostDto getPostById(Integer id);
-    List<PostDto> getPostsByUserId(Integer id);
-    List<PostDto> getPostsByUsername(String username);
+    List<PostDto> getAllPosts(String viewerUsername);
+    PostDto getPostById(Integer id, String viewerUsername);
+    List<PostDto> getPostsByUsername(String username, String viewerUsername);
     PostDto createPost(PostDto postDto);
     PostDto updatePost(PostDto postDto);
 }

@@ -20,23 +20,19 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
-    public List<PostDto> getAllPosts() {
-        return postRepository.findAll().stream().map(PostDto::new).collect(Collectors.toList());
+    public List<PostDto> getAllPosts( String viewerUsername ) {
+        return postRepository.findAll().stream().map(post -> new PostDto(post, viewerUsername)).collect(Collectors.toList());
     }
 
     @Override
-    public PostDto getPostById(Integer id) {
-        return postRepository.findById(id).map(PostDto::new).orElse(null);
+    public PostDto getPostById(Integer id, String viewerUsername) {
+        return postRepository.findById(id).map(post -> new PostDto(post, viewerUsername)).orElse(null);
     }
 
-    @Override
-    public List<PostDto> getPostsByUserId(Integer id) {
-        return postRepository.findAllByUserId(id).stream().map(PostDto::new).collect(Collectors.toList());
-    }
 
     @Override
-    public List<PostDto> getPostsByUsername(String username) {
-        return postRepository.findAllByUserUsername(username).stream().map(PostDto::new).collect(Collectors.toList());
+    public List<PostDto> getPostsByUsername(String username, String viewerUsername) {
+        return postRepository.findAllByUserUsername(username).stream().map(post -> new PostDto(post, viewerUsername)).collect(Collectors.toList());
     }
 
     @Override
@@ -44,8 +40,6 @@ public class PostServiceImpl implements PostService {
         postDto.setId(null);
         postDto.setComments(new ArrayList<>());
         postDto.setUploadDate(LocalDateTime.now());
-        postDto.setLikesNumber(0);
-        postDto.setDislikesNumber(0);
         postDto.setIsDeleted(false);
         Post entity = postDto.toEntity();
         Post savedEntity = postRepository.save(entity);
@@ -54,15 +48,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto updatePost(PostDto updatedPostDto) {
-        PostDto postToEditDto = getPostById(updatedPostDto.getId());
+        PostDto postToEditDto = getPostById(updatedPostDto.getId(), null);
         Post savedEntity;
         if (postToEditDto == null) {
             return null;
         }
         postToEditDto.setTitle(updatedPostDto.getTitle()!=null?updatedPostDto.getTitle():postToEditDto.getTitle());
         postToEditDto.setContentUri(updatedPostDto.getContentUri()!=null?updatedPostDto.getContentUri():postToEditDto.getContentUri());
-        postToEditDto.setLikesNumber(updatedPostDto.getLikesNumber()!=null?updatedPostDto.getLikesNumber():postToEditDto.getLikesNumber());
-        postToEditDto.setDislikesNumber(updatedPostDto.getDislikesNumber()!=null?updatedPostDto.getDislikesNumber():postToEditDto.getDislikesNumber());
         postToEditDto.setIsDeleted(updatedPostDto.getIsDeleted()!=null?updatedPostDto.getIsDeleted():postToEditDto.getIsDeleted());
 
         savedEntity = postRepository.save(postToEditDto.toEntity());

@@ -5,11 +5,10 @@ import put.appsec.backend.dto.CommentDto;
 import java.util.List;
 
 public interface CommentService {
-    List<CommentDto> getAllComments();
-    CommentDto getCommentById(Integer id);
-    List<CommentDto> getAllCommentsByPostId(Integer id);
-    List<CommentDto> getAllCommentsByUserId(Integer id);
-    List<CommentDto> getAllCommentsByUsername(String username);
+    List<CommentDto> getAllComments(String viewerUsername);
+    CommentDto getCommentById(Integer id, String viewerUsername);
+    List<CommentDto> getAllCommentsByPostId(Integer id, String viewerUsername);
+    List<CommentDto> getAllCommentsByUsername(String username, String viewerUsername);
     CommentDto createComment(CommentDto commentDto);
     CommentDto updateComment(CommentDto commentDto);
 }
