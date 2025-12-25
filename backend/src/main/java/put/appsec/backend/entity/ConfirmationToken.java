@@ -18,7 +18,7 @@ import java.util.UUID;
 public class ConfirmationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String token;
     @Column(name = "created_date")
     private LocalDateTime createdDate;
