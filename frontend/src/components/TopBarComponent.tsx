@@ -51,6 +51,12 @@ function TopBarComponent(){
                         </Button>
                     )}
 
+                    {cookie.logged && (
+                        <Button variant="contained" color="secondary" onClick={() => navigate('/upload')}>
+                            Upload
+                        </Button>
+                    )}
+
                     <IconButton color="inherit" onClick={toggleColorMode} >
                         {mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
                     </IconButton>

@@ -28,6 +28,7 @@ public class PostDto {
     private Integer userId;
     private String author;
     private List<CommentDto> comments;
+    private List<PostReaction> reactions;
 
     public PostDto(Post post, String viewerUsername) {
         this.id = post.getId();

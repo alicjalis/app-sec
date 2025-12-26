@@ -1,6 +1,7 @@
 package put.appsec.backend.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import put.appsec.backend.dto.PostDto;
@@ -21,7 +22,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> getAllPosts( String viewerUsername ) {
-        return postRepository.findAll().stream().map(post -> new PostDto(post, viewerUsername)).collect(Collectors.toList());
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "uploadDate")).stream().map(post -> new PostDto(post, viewerUsername)).collect(Collectors.toList());
     }
 
     @Override
@@ -42,6 +43,7 @@ public class PostServiceImpl implements PostService {
         postDto.setUploadDate(LocalDateTime.now());
         postDto.setIsDeleted(false);
         Post entity = postDto.toEntity();
+        entity.setPostReactions(new ArrayList<>());
         Post savedEntity = postRepository.save(entity);
         return new PostDto(savedEntity);
     }

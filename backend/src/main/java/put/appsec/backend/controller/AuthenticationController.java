@@ -1,7 +1,6 @@
 package put.appsec.backend.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.Token;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.appsec.backend.dto.LoginDto;
@@ -11,12 +10,14 @@ import put.appsec.backend.entity.User;
 import put.appsec.backend.enums.UserType;
 import put.appsec.backend.security.AuthenticationService;
 import put.appsec.backend.security.JwtService;
+import put.appsec.backend.service.UserService;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
+    private final UserService userService;
     private final JwtService jwtService;
 
     @PostMapping("/register")
@@ -68,5 +69,16 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(savedUser);
+    }
+
+    @GetMapping("/whoami/{token}")
+    public ResponseEntity<UserDto> whoami(@PathVariable("token") String token) {
+        try {
+            String username = jwtService.extractUsername(token);
+            UserDto user = userService.getUserByUsername(username);
+            return ResponseEntity.ok(user);
+        }catch (Exception e) {
+            return ResponseEntity.ok(null);
+        }
     }
 }

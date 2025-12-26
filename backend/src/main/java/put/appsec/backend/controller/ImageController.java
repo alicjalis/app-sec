@@ -34,9 +34,7 @@ public class ImageController {
 
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String fileUrl = "http://localhost:8080/images/" + fileName;
-
-            return ResponseEntity.ok(fileUrl);
+            return ResponseEntity.ok(fileName);
 
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Could not upload image: " + e.getMessage());

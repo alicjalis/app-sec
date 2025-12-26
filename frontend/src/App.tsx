@@ -8,6 +8,7 @@ import PasswordResetPage from "./pages/PasswordResetPage.tsx";
 import ConfirmEmailPage from "./pages/ConfirmEmailPage.tsx";
 import UserProfilePage from "./pages/UserProfilePage.tsx";
 import MainFeedPage from "./pages/MainFeedPage.tsx";
+import UploadPage from "./pages/UploadPage.tsx";
 
 function App() {
     const location = useLocation();
@@ -67,6 +68,8 @@ function App() {
                         <Route path="/confirm-email" element={<ConfirmEmailPage />} />
 
                         <Route path={"/user/:username"} element={<UserProfilePage />} />
+
+                        <Route path={"/upload"} element={<UploadPage />} />
                     </Routes>
                 )}
             </Box>
