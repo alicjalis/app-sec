@@ -4,14 +4,16 @@ import {useEffect, useState} from "react";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import type {Post} from "../model/Post.tsx";
 import {PostComponent} from "../components/PostComponent.tsx";
+import {GetCookie} from "../cookie/GetCookie.tsx";
 
 function UserProfilePage() {
     const { username } = useParams<{ username: string }>();
     const[posts, setPosts] = useState<Post[]>([]);
+    const cookie = GetCookie()
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + 'posts/user/username/' + username,
+            REQUEST_PREFIX + 'posts/user/' + username + "?username=" + cookie.username,
             {
                 method: "GET",
                 headers: {
@@ -25,7 +27,7 @@ function UserProfilePage() {
         }).then(data => {
             setPosts(data);
         })
-    }, [username]);
+    }, [cookie.username, username]);
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 3 }}>

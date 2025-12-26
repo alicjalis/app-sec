@@ -2,7 +2,7 @@ import { Cookies } from 'react-cookie';
 
 export function SetCookie(cookieObject: object) {
     const cookies = new Cookies();
-    cookies.set('biscuit', cookieObject, {path: "/", maxAge: 7200000});
+    cookies.set('biscuit', cookieObject, {path: "/", maxAge: 7200});
     sessionStorage.setItem('logged', String(true));
 }
 

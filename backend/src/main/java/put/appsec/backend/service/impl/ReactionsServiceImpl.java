@@ -95,7 +95,6 @@ public class ReactionsServiceImpl implements ReactionsService {
             return null;
         }
 
-        postReaction.setReactionValue(reactionDto.getReaction());
         postReactionsRepository.delete(postReaction);
 
         Post updatedPost =  postRepository.findById(reactionDto.getTargetId()).orElse(null);
