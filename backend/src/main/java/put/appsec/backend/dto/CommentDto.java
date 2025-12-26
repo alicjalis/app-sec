@@ -17,6 +17,7 @@ public class CommentDto {
     private Short userReaction;
     private Integer reactionScore;
     private Integer userId;
+    private String author;
     private Integer postId;
 
     public CommentDto(Comment comment, String viewerUsername) {
@@ -32,6 +33,7 @@ public class CommentDto {
 
         this.reactionScore = comment.getCommentReactions().stream().mapToInt(CommentReaction::getReactionValue).sum();
         this.userId = comment.getUser().getId();
+        this.author = comment.getUser().getUsername();
         this.postId = comment.getPost().getId();
     }
 

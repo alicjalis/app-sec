@@ -9,6 +9,7 @@ import ConfirmEmailPage from "./pages/ConfirmEmailPage.tsx";
 import UserProfilePage from "./pages/UserProfilePage.tsx";
 import MainFeedPage from "./pages/MainFeedPage.tsx";
 import UploadPage from "./pages/UploadPage.tsx";
+import PostPage from "./pages/PostPage.tsx";
 
 function App() {
     const location = useLocation();
@@ -70,6 +71,9 @@ function App() {
                         <Route path={"/user/:username"} element={<UserProfilePage />} />
 
                         <Route path={"/upload"} element={<UploadPage />} />
+
+                        <Route path={"/post/:id"} element={<PostPage />} />
+
                     </Routes>
                 )}
             </Box>

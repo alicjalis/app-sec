@@ -35,7 +35,7 @@ function UserProfilePage() {
 
                 <Stack spacing={2}>
                     {posts.map((post) => (
-                        <PostComponent key={post.id} post={post} displayUsername={false}/>
+                        <PostComponent key={post.id} post={post} displayUsername={false} displayComments={false}/>
                     ))}
                 </Stack>
 

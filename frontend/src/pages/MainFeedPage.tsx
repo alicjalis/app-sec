@@ -33,7 +33,7 @@ function MainFeedPage() {
 
                 <Stack spacing={2}>
                     {posts.map((post) => (
-                        <PostComponent key={post.id} post={post} displayUsername={true}/>
+                        <PostComponent key={post.id} post={post} displayUsername={true} displayComments={false}/>
                     ))}
                 </Stack>
 

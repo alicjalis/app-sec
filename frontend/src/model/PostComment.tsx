@@ -1,12 +1,9 @@
-import type {PostComment} from "./PostComment.tsx";
-
-export interface Post {
+export interface PostComment {
     id: number,
-    title: string,
+    content: string,
     author: string,
     reactionScore: number,
     userReaction: number | null,
     contentUri: string,
     uploadDate: Date,
-    comments: PostComment[],
 }
