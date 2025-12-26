@@ -1,10 +1,13 @@
 import type {Post} from "../model/Post.tsx";
-import React from "react";
+import React, { useState } from "react";
 import {Box, Card, CardContent, CardMedia, Divider, Stack, Typography} from "@mui/material";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {VoteBoxComponent} from "./VoteBoxComponent.tsx";
 import {CommentComponent} from "./CommentComponent.tsx";
 import {useNavigate} from "react-router-dom";
+import {GetCookie} from "../cookie/GetCookie.tsx";
+import {AddCommentComponent} from "./AddCommentComponent.tsx";
+import type {PostComment} from "../model/PostComment.tsx";
 
 interface PostComponentProps {
     post: Post;
@@ -14,6 +17,14 @@ interface PostComponentProps {
 
 export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsername, displayComments }) => {
     const navigate = useNavigate();
+    const cookie = GetCookie();
+
+    const [commentsList, setCommentsList] = useState<PostComment[]>(post.comments || []);
+
+    const handleNewComment = (newComment: PostComment) => {
+        setCommentsList([...commentsList, newComment]);
+    };
+
     return (
         <Card sx={{ width: 600, borderRadius: 2, boxShadow: 3 }} >
             <CardContent sx={{ display: 'flex' }}>
@@ -40,7 +51,7 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
                 onClick={() => {navigate("/post/" + post.id)}}
             />
 
-            {displayComments && post.comments && post.comments.length > 0 && (
+            {displayComments && post.comments &&  (
                 <Box sx={{ px: 2, pb: 2 }}>
                     <Divider sx={{ my: 2 }} textAlign="left">
                         <Typography variant="caption" color="text.secondary">
@@ -48,9 +59,10 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
                         </Typography>
                     </Divider>
 
+                    {cookie.logged && <AddCommentComponent postId={post.id} onCommentAdded={handleNewComment}/>}
                     <Stack spacing={1}>
-                        {post.comments.map((c) => (
-                            <CommentComponent postComment={c}/>
+                        {commentsList.map((c) => (
+                            <CommentComponent key={c.id} postComment={c}/>
                         ))}
                     </Stack>
                 </Box>

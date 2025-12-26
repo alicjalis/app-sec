@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import put.appsec.backend.dto.CommentDto;
-import put.appsec.backend.dto.PostDto;
 import put.appsec.backend.entity.Comment;
 import put.appsec.backend.repository.CommentRepository;
 import put.appsec.backend.service.CommentService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +45,7 @@ public class CommentServiceImpl implements CommentService {
         commentDto.setUploadDate(LocalDateTime.now());
         commentDto.setIsDeleted(false);
         Comment entity = commentDto.toEntity();
+        entity.setCommentReactions(new ArrayList<>());
         Comment savedEntity = commentRepository.save(entity);
         return new CommentDto(savedEntity);
     }
