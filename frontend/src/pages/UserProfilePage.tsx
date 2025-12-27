@@ -13,7 +13,7 @@ function UserProfilePage() {
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + 'posts/user/' + username + "?username=" + cookie.username,
+            REQUEST_PREFIX + 'posts/user/' + username + "?username=" + (cookie?.username || ""),
             {
                 method: "GET",
                 headers: {
@@ -34,7 +34,7 @@ function UserProfilePage() {
             <Container maxWidth="md">
 
                 <Stack spacing={2}>
-                    {posts.map((post) => (
+                    {posts.filter(post => !post.isDeleted).map((post) => (
                         <PostComponent key={post.id} post={post} displayUsername={false} displayComments={false}/>
                     ))}
                 </Stack>

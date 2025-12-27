@@ -11,7 +11,7 @@ function MainFeedPage() {
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + 'posts/all?username=' + cookie.username,
+            REQUEST_PREFIX + 'posts/all?username=' + (cookie?.username || ""),
             {
                 method: "GET",
                 headers: {
@@ -32,7 +32,7 @@ function MainFeedPage() {
             <Container maxWidth="md">
 
                 <Stack spacing={2}>
-                    {posts.map((post) => (
+                    {posts.filter(post => !post.isDeleted).map((post) => (
                         <PostComponent key={post.id} post={post} displayUsername={true} displayComments={false}/>
                     ))}
                 </Stack>

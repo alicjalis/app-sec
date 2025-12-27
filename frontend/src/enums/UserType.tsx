@@ -1,4 +1,4 @@
-const UserType = {
+export const UserType = {
     NONE: "NONE",
     USER: "USER",
     ADMIN: "ADMIN",

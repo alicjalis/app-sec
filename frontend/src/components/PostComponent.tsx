@@ -1,6 +1,6 @@
 import type {Post} from "../model/Post.tsx";
 import React, { useState } from "react";
-import {Box, Card, CardContent, CardMedia, Divider, Stack, Typography} from "@mui/material";
+import {Box, Card, CardContent, CardMedia, Divider, IconButton, Stack, Typography} from "@mui/material";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {VoteBoxComponent} from "./VoteBoxComponent.tsx";
 import {CommentComponent} from "./CommentComponent.tsx";
@@ -8,6 +8,8 @@ import {useNavigate} from "react-router-dom";
 import {GetCookie} from "../cookie/GetCookie.tsx";
 import {AddCommentComponent} from "./AddCommentComponent.tsx";
 import type {PostComment} from "../model/PostComment.tsx";
+import {UserType} from "../enums/UserType.tsx";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface PostComponentProps {
     post: Post;
@@ -20,10 +22,40 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
     const cookie = GetCookie();
 
     const [commentsList, setCommentsList] = useState<PostComment[]>(post.comments || []);
+    const [isDeleted, setIsDeleted] = useState(post.isDeleted);
 
     const handleNewComment = (newComment: PostComment) => {
         setCommentsList([...commentsList, newComment]);
     };
+
+    const handleDelete = () => {
+        if (!window.confirm("Are you sure you want to delete this post?")) return;
+
+        const payload = { ...post, isDeleted: true };
+
+        fetch(REQUEST_PREFIX + 'posts/update', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': 'Bearer ' + cookie.token,
+            },
+            body: JSON.stringify(payload)
+        }).then(response => {
+            if (response.ok) {
+                setIsDeleted(true);
+            }
+        }).catch(err => console.error(err));
+    };
+
+    if (isDeleted) {
+        return (
+            <Card sx={{ width: 600, borderRadius: 2, boxShadow: 3 }} >
+                <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                    [deleted]
+                </Typography>
+            </Card>
+        );
+    }
 
     return (
         <Card sx={{ width: 600, borderRadius: 2, boxShadow: 3 }} >
@@ -37,11 +69,24 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
 
                 <Box sx={{ flexGrow: 1 }} />
 
-                {displayUsername && (
-                    <Typography variant="h6" component="div" noWrap>
-                        {post.author}
-                    </Typography>
-                )}
+                <Stack direction="row" alignItems="center" spacing={1}>
+                    {displayUsername && (
+                        <Typography variant="h6" component="div" noWrap>
+                            {post.author}
+                        </Typography>
+                    )}
+
+                    {cookie.userType == UserType.ADMIN && (
+                        <IconButton
+                            onClick={handleDelete}
+                            color="error"
+                            size="small"
+                            sx={{ ml: 1 }}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
+                </Stack>
             </CardContent>
             <CardMedia
                 component="img"

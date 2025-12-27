@@ -9,4 +9,5 @@ export interface Post {
     contentUri: string,
     uploadDate: Date,
     comments: PostComment[],
+    isDeleted: boolean,
 }

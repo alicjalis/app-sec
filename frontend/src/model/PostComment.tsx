@@ -6,4 +6,5 @@ export interface PostComment {
     userReaction: number | null,
     contentUri: string,
     uploadDate: Date,
+    isDeleted: boolean,
 }
