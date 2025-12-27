@@ -16,14 +16,19 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/media")
 @RequiredArgsConstructor
-public class ImageController {
+public class MediaController {
     private static final String UPLOAD_DIR = "uploads/";
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadMedia(@RequestParam("file") MultipartFile file) {
         try {
+            String contentType = file.getContentType();
+            if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
+                return ResponseEntity.badRequest().body("Invalid file type. Only images and videos allowed.");
+            }
+
             Path uploadPath = Paths.get(UPLOAD_DIR);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);

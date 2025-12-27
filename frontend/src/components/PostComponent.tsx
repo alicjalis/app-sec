@@ -63,11 +63,11 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
 
                 <VoteBoxComponent contentType={"post"} contentId={post.id} initialUserVote={post.userReaction} initialScore={post.reactionScore} />
 
-                <Typography variant="h6" component="div" noWrap ml={2}>
-                    {post.title}
-                </Typography>
-
-                <Box sx={{ flexGrow: 1 }} />
+                <Box sx={{width: "100%", cursor: 'pointer'}} onClick={() => { navigate("/post/" + post.id) }}>
+                    <Typography variant="h6" component="div" noWrap ml={2}>
+                        {post.title}
+                    </Typography>
+                </Box>
 
                 <Stack direction="row" alignItems="center" spacing={1}>
                     {displayUsername && (
@@ -88,13 +88,31 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
                     )}
                 </Stack>
             </CardContent>
-            <CardMedia
-                component="img"
-                image={REQUEST_PREFIX + "images/" + post.contentUri}
-                alt={post.title}
-                sx={{ objectFit: 'cover', cursor: 'pointer'  }}
-                onClick={() => {navigate("/post/" + post.id)}}
-            />
+            {post.contentUri && (post.contentUri.endsWith('.mp4')) ? (
+                <CardMedia
+                    component="video"
+                    src={REQUEST_PREFIX + "media/" + post.contentUri}
+                    controls
+                    onLoadedMetadata={(e: React.SyntheticEvent<HTMLVideoElement>) => {
+                        e.currentTarget.volume = 0.5;
+                    }}
+                    sx={{
+                        height: 500,
+                        width: '100%',
+                        objectFit: 'contain',
+                        bgcolor: 'black'
+                    }}
+                />
+            ) : (
+                <CardMedia
+                    component="img"
+                    image={REQUEST_PREFIX + "media/" + post.contentUri}
+                    sx={{
+                        objectFit: 'cover',
+                        maxHeight: 500
+                    }}
+                />
+            )}
 
             {displayComments && post.comments &&  (
                 <Box sx={{ px: 2, pb: 2 }}>

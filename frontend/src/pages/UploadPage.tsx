@@ -162,12 +162,21 @@ function UploadPage() {
                                 {previewUrl ? (
                                     <>
                                         {/* Image Preview */}
-                                        <Box
-                                            component="img"
-                                            src={previewUrl}
-                                            alt="Preview"
-                                            sx={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: 300 }}
-                                        />
+                                        {selectedFile?.type.startsWith('video/') ? (
+                                            <Box
+                                                component="video"
+                                                src={previewUrl}
+                                                controls
+                                                sx={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: 300 }}
+                                            />
+                                        ) : (
+                                            <Box
+                                                component="img"
+                                                src={previewUrl}
+                                                alt="Preview"
+                                                sx={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: 300 }}
+                                            />
+                                        )}
                                         {/* Close Button */}
                                         <IconButton
                                             onClick={handleClear}
@@ -194,7 +203,7 @@ function UploadPage() {
                                             <input
                                                 type="file"
                                                 hidden
-                                                accept="image/*"
+                                                accept="image/*,video/mp4"
                                                 onChange={handleFileSelect}
                                             />
                                         </Button>
