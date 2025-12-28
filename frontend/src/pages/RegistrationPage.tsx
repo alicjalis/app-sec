@@ -76,7 +76,7 @@ function RegistrationPage() {
                         (｡◕‿‿◕｡)
                     </Typography>
                     <Typography variant="body1">
-                        You can now log in. Check your email to confirm it.
+                        Check your email to confirm it.
                     </Typography>
                 </Box>
             ) : (

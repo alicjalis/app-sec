@@ -16,7 +16,7 @@ export const AddCommentComponent: React.FC<CommentInputProps> = ({ postId, onCom
     const cookie = GetCookie();
 
     async function getUserId() {
-        const response = await fetch(REQUEST_PREFIX + 'auth/whoami/' + cookie.token, {
+        const response = await fetch(REQUEST_PREFIX + 'auth/whoami/', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',

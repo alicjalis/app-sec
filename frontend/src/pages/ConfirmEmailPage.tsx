@@ -30,12 +30,11 @@ function ConfirmEmailPage() {
                     throw new Error(errorMessage);
                 }
 
-                const result = await response.json();
-                setIsConfirmationSuccessful(result);
-                console.log("Success:", result);
+                setIsConfirmationSuccessful(true);
 
             } catch (error: any) {
                 setApiError(error.message || "An unexpected error occurred.");
+                setIsConfirmationSuccessful(false);
             }
         };
 
@@ -56,7 +55,7 @@ function ConfirmEmailPage() {
                         (｡◕‿‿◕｡)
                     </Typography>
                     <Typography variant="body1">
-                        Have fun.
+                        You can now log in. Have fun.
                     </Typography>
                 </Box>
             ) : (

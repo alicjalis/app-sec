@@ -43,4 +43,9 @@ public class User implements UserDetails {
         if (userType == null) return List.of();
         return List.of(new SimpleGrantedAuthority("ROLE_" + userType.name()));
     }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

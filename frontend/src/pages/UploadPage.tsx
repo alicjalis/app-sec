@@ -30,7 +30,7 @@ function UploadPage() {
     useEffect(() => {
         if (!cookie.token) return;
 
-        fetch(REQUEST_PREFIX + 'auth/whoami/' + cookie.token, {
+        fetch(REQUEST_PREFIX + 'auth/whoami', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
@@ -43,6 +43,7 @@ function UploadPage() {
                     return response.json();
                 }
             }).then(data => {
+                console.log(data);
                 setUserId(data.id);
         })
 

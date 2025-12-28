@@ -1,11 +1,12 @@
 package put.appsec.backend.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import put.appsec.backend.enums.UserType;
 
-@Setter
-@Getter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponseDto {
     private String token;
     private long expiresIn;
