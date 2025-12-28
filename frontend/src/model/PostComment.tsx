@@ -3,7 +3,7 @@ export interface PostComment {
     content: string,
     author: string,
     reactionScore: number,
-    userReaction: number | null,
+    userReaction: number,
     contentUri: string,
     uploadDate: Date,
     isDeleted: boolean,

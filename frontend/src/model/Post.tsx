@@ -5,7 +5,7 @@ export interface Post {
     title: string,
     author: string,
     reactionScore: number,
-    userReaction: number | null,
+    userReaction: number,
     contentUri: string,
     uploadDate: Date,
     comments: PostComment[],

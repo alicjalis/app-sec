@@ -31,15 +31,12 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
     const handleDelete = () => {
         if (!window.confirm("Are you sure you want to delete this post?")) return;
 
-        const payload = { ...post, isDeleted: true };
-
-        fetch(REQUEST_PREFIX + 'posts/update', {
-            method: "POST",
+        fetch(REQUEST_PREFIX + 'posts/' + post.id, {
+            method: "DELETE",
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': 'Bearer ' + cookie.token,
+                ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
             },
-            body: JSON.stringify(payload)
         }).then(response => {
             if (response.ok) {
                 setIsDeleted(true);

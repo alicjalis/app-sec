@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import put.appsec.backend.dto.*;
+import put.appsec.backend.dto.auth.*;
+import put.appsec.backend.dto.user.UserDto;
 import put.appsec.backend.security.AuthenticationService;
 
 @RestController

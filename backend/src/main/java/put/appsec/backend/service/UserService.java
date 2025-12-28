@@ -1,13 +1,13 @@
 package put.appsec.backend.service;
 
-import put.appsec.backend.dto.UserDto;
+import put.appsec.backend.dto.user.UpdateUserRequestDto;
+import put.appsec.backend.dto.user.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserDto> getAllUsers();
-    UserDto getUserById(Integer id);
-    UserDto getUserByUsername(String username);
-    UserDto createUser(UserDto userDto);
-    UserDto updateUser(UserDto userDto);
+    List<UserDto> getAllUsers(String viewerUsername);
+    UserDto getUserById(Integer id, String viewerUsername);
+    UserDto getUserByUsername(String username, String viewerUsername);
+    UserDto updateUser(Integer id, UpdateUserRequestDto request, String requesterUsername);
 }

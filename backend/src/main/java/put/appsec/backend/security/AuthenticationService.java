@@ -12,7 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import put.appsec.backend.dto.*;
+import put.appsec.backend.dto.auth.LoginRequestDto;
+import put.appsec.backend.dto.auth.LoginResponseDto;
+import put.appsec.backend.dto.auth.RegisterRequestDto;
+import put.appsec.backend.dto.user.UserDto;
 import put.appsec.backend.entity.ConfirmationToken;
 import put.appsec.backend.entity.User;
 import put.appsec.backend.enums.ConfirmationRequestType;
@@ -20,6 +23,7 @@ import put.appsec.backend.enums.UserType;
 import put.appsec.backend.exceptions.AccountNotEnabledException;
 import put.appsec.backend.exceptions.InvalidTokenException;
 import put.appsec.backend.exceptions.UserAlreadyExistsException;
+import put.appsec.backend.mapper.UserMapper;
 import put.appsec.backend.repository.ConfirmationTokenRepository;
 import put.appsec.backend.repository.UserRepository;
 
@@ -37,6 +41,7 @@ public class AuthenticationService {
 
     private final PasswordEncoder encoder;
     private final JavaMailSender javaMailSender;
+    private final UserMapper userMapper;
 
     @Value("${application.frontend.url:http://localhost:5173}")
     private String frontendUrl;
@@ -71,7 +76,7 @@ public class AuthenticationService {
         String link = frontendUrl + "/confirm-email?token=" + confirmationToken.getToken();
         sendEmail(user.getEmail(), "Confirm your email", "Hi " + user.getUsername() + ",\nClick here: " + link);
 
-        return new UserDto(savedEntity);
+        return userMapper.toDto(savedEntity, savedEntity.getUsername());
     }
 
     @Transactional
@@ -172,6 +177,6 @@ public class AuthenticationService {
 
     public UserDto getUserByUsername(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new UserDto(user);
+        return userMapper.toDto(user, username);
     }
 }

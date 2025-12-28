@@ -11,11 +11,12 @@ function MainFeedPage() {
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + 'posts/all?username=' + (cookie?.username || ""),
+            REQUEST_PREFIX + 'posts',
             {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
+                    ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
                 }
             }
         ).then(response => {
@@ -25,7 +26,7 @@ function MainFeedPage() {
         }).then(data => {
             setPosts(data);
         })
-    }, [cookie.username]);
+    }, [cookie.token, cookie.username]);
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 3 }}>

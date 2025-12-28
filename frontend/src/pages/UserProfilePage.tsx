@@ -13,11 +13,12 @@ function UserProfilePage() {
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + 'posts/user/' + username + "?username=" + (cookie?.username || ""),
+            REQUEST_PREFIX + 'posts?username=' + username,
             {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
+                    ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
                 }
             }
         ).then(response => {
@@ -27,7 +28,7 @@ function UserProfilePage() {
         }).then(data => {
             setPosts(data);
         })
-    }, [cookie.username, username]);
+    }, [cookie.token, cookie.username, username]);
 
     return (
         <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: 3 }}>

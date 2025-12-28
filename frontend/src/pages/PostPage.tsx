@@ -12,11 +12,12 @@ function PostPage(){
 
     useEffect(() => {
         fetch(
-            REQUEST_PREFIX + 'posts/id/' + id + "?username=" + cookie.username,
+            REQUEST_PREFIX + 'posts/' + id,
             {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
+                    ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
                 }
             }
         ).then(response => {
@@ -26,7 +27,7 @@ function PostPage(){
         }).then(data => {
             setPost(data);
         })
-    }, [cookie.username, id]);
+    }, [cookie.token, cookie.username, id]);
 
     return (
         <Box>

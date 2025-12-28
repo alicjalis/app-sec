@@ -1,9 +1,13 @@
 package put.appsec.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import put.appsec.backend.dto.UserDto;
+import put.appsec.backend.dto.user.UpdateUserRequestDto;
+import put.appsec.backend.dto.user.UserDto;
 import put.appsec.backend.service.UserService;
 
 import java.util.List;
@@ -14,45 +18,27 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> allUsers = userService.getAllUsers();
-        return ResponseEntity.ok(allUsers);
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers(@AuthenticationPrincipal UserDetails currentUser) {
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(userService.getAllUsers(viewer));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Integer id) {
-        UserDto user = userService.getUserById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser) {
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(userService.getUserById(id, viewer));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username) {
-        UserDto user = userService.getUserByUsername(username);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDto> getUserByUsername(@PathVariable String username, @AuthenticationPrincipal UserDetails currentUser) {
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(userService.getUserByUsername(username, viewer));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        UserDto createdUser = userService.createUser(userDto);
-        if (createdUser == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(createdUser);
-    }
-
-    @PostMapping("/update")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
-        UserDto updatedUser = userService.updateUser(userDto);
-        if (updatedUser == null) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Integer id, @RequestBody @Valid UpdateUserRequestDto request, @AuthenticationPrincipal UserDetails currentUser) {
+        UserDto updatedUser = userService.updateUser(id, request, currentUser.getUsername());
         return ResponseEntity.ok(updatedUser);
     }
 }

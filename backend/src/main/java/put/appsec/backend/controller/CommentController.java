@@ -1,9 +1,15 @@
 package put.appsec.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import put.appsec.backend.dto.CommentDto;
+import put.appsec.backend.dto.comment.CommentDto;
+import put.appsec.backend.dto.comment.CreateCommentRequestDto;
+import put.appsec.backend.dto.comment.UpdateCommentRequestDto;
 import put.appsec.backend.service.CommentService;
 
 import java.util.List;
@@ -19,40 +25,42 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getAllComments(viewerUsername));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<CommentDto> getCommentById(@PathVariable Integer id, @RequestParam(value = "username", defaultValue = "") String viewerUsername){
-        CommentDto comment = commentService.getCommentById(id, viewerUsername);
-        if(comment == null){
-            return ResponseEntity.notFound().build();
+    @GetMapping("/{id}")
+    public ResponseEntity<CommentDto> getCommentById(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser){
+        String username = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(commentService.getCommentById(id, username));
+    }
+
+    @GetMapping(params = "postId")
+        public ResponseEntity<List<CommentDto>> getAllCommentsByPostId(@RequestParam Integer postId, @AuthenticationPrincipal UserDetails currentUser){
+        String username = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(commentService.getCommentsByPostId(postId, username));
+    }
+
+    @GetMapping(params = "username")
+    public ResponseEntity<List<CommentDto>> getAllCommentsByUsername(@RequestParam String username, @AuthenticationPrincipal UserDetails currentUser){
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(commentService.getCommentsByUsername(username, viewer));
+    }
+
+    @PostMapping
+    public ResponseEntity<CommentDto> createComment(@RequestBody @Valid CreateCommentRequestDto request, @AuthenticationPrincipal UserDetails currentUser){
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok(comment);
+        CommentDto createdComment = commentService.createComment(request, currentUser.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
     }
 
-    @GetMapping("/post/{id}")
-    public ResponseEntity<List<CommentDto>> getAllCommentsByPostId(@PathVariable Integer id, @RequestParam(value = "username", defaultValue = "") String viewerUsername){
-        return ResponseEntity.ok(commentService.getAllCommentsByPostId(id, viewerUsername));
-    }
-
-    @GetMapping("/user/{username}")
-    public ResponseEntity<List<CommentDto>> getAllCommentsByUsername(@PathVariable String username, @RequestParam(value = "username", defaultValue = "") String viewerUsername){
-        return ResponseEntity.ok(commentService.getAllCommentsByUsername(username, viewerUsername));
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<CommentDto> createComment(@RequestBody CommentDto commentDto){
-        CommentDto createdComment = commentService.createComment(commentDto);
-        if(createdComment == null){
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(createdComment);
-    }
-
-    @PostMapping("/update")
-    public ResponseEntity<CommentDto> updateComment(@RequestBody CommentDto commentDto){
-        CommentDto updatedComment = commentService.updateComment(commentDto);
-        if(updatedComment == null){
-            return ResponseEntity.badRequest().build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Integer id, @RequestBody @Valid UpdateCommentRequestDto request, @AuthenticationPrincipal UserDetails currentUser){
+        CommentDto updatedComment = commentService.updateComment(id, request, currentUser.getUsername());
         return ResponseEntity.ok(updatedComment);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser) {
+        commentService.deleteComment(id, currentUser.getUsername());
+        return ResponseEntity.noContent().build();
     }
 }

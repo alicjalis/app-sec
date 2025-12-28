@@ -12,42 +12,19 @@ import {
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {GetCookie} from "../cookie/GetCookie.tsx";
 import {useNavigate} from "react-router-dom";
 
 function UploadPage() {
-    const [loggedIn, setLoggedIn] = useState(false);
     const cookie = GetCookie();
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
-    const [userId, setUserId] = useState<number | null>(null);
 
-    useEffect(() => {
-        if (!cookie.token) return;
-
-        fetch(REQUEST_PREFIX + 'auth/whoami', {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': 'Bearer ' + cookie.token
-            }
-        })
-            .then(async response => {
-                if (response.ok) {
-                    setLoggedIn(true);
-                    return response.json();
-                }
-            }).then(data => {
-                console.log(data);
-                setUserId(data.id);
-        })
-
-    }, [cookie.token]);
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!event.target.files || event.target.files.length === 0) return;
@@ -55,12 +32,10 @@ function UploadPage() {
         const file = event.target.files[0];
         setSelectedFile(file);
 
-        // Create a local URL just for preview
         const objectUrl = URL.createObjectURL(file);
         setPreviewUrl(objectUrl);
     };
 
-    // 2. Clear Selection
     const handleClear = () => {
         setSelectedFile(null);
         setPreviewUrl(null);
@@ -78,10 +53,10 @@ function UploadPage() {
             const formData = new FormData();
             formData.append('file', selectedFile);
 
-            const imageResponse = await fetch(REQUEST_PREFIX + 'images/upload', {
+            const imageResponse = await fetch(REQUEST_PREFIX + 'media/upload', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + cookie.token,
+                    ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
                 },
                 body: formData,
             });
@@ -91,16 +66,15 @@ function UploadPage() {
             const uploadedImageUrl = await imageResponse.text();
             console.log("Image uploaded:", uploadedImageUrl);
 
-            const postResponse = await fetch(REQUEST_PREFIX + 'posts/create', {
+            const postResponse = await fetch(REQUEST_PREFIX + 'posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + cookie.token,
+                    ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
                 },
                 body: JSON.stringify({
                     title: title,
                     contentUri: uploadedImageUrl,
-                    userId: userId,
                 })
             });
 
@@ -121,7 +95,7 @@ function UploadPage() {
 
     return (
         <Box>
-            {!loggedIn ? (
+            {!cookie.logged ? (
                 <Typography>Login to upload</Typography>
             ):(
                 <Container maxWidth="sm" sx={{ py: 8 }}>

@@ -1,9 +1,15 @@
 package put.appsec.backend.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import put.appsec.backend.dto.PostDto;
+import put.appsec.backend.dto.post.CreatePostRequestDto;
+import put.appsec.backend.dto.post.PostDto;
+import put.appsec.backend.dto.post.UpdatePostRequestDto;
 import put.appsec.backend.service.PostService;
 
 import java.util.List;
@@ -14,42 +20,40 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<PostDto>> getAllPosts(@RequestParam(value = "username", defaultValue = "") String viewerUsername) {
-        List<PostDto> allPosts = postService.getAllPosts(viewerUsername);
-        return ResponseEntity.ok(allPosts);
+    @GetMapping
+    public ResponseEntity<List<PostDto>> getAllPosts(@AuthenticationPrincipal UserDetails currentUser) {
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(postService.getAllPosts(viewer));
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Integer id, @RequestParam(value = "username", defaultValue = "") String viewerUsername) {
-        PostDto post = postService.getPostById(id, viewerUsername);
-        if (post == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(post);
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser) {
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(postService.getPostById(id, viewer));
     }
 
-    @GetMapping("/user/{username}")
-    public ResponseEntity<List<PostDto>> getPostsByUsername(@PathVariable String username, @RequestParam(value = "username", defaultValue = "") String viewerUsername) {
-        List<PostDto> posts = postService.getPostsByUsername(username, viewerUsername);
-        return ResponseEntity.ok(posts);
+    @GetMapping(params = "username")
+    public ResponseEntity<List<PostDto>> getPostsByUsername(@RequestParam String username, @AuthenticationPrincipal UserDetails currentUser) {
+        String viewer = (currentUser != null) ? currentUser.getUsername() : null;
+        return ResponseEntity.ok(postService.getPostsByUsername(username, viewer));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
-        PostDto post = postService.createPost(postDto);
-        if (post == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(post);
+    @PostMapping
+    public ResponseEntity<PostDto> createPost(@RequestBody @Valid CreatePostRequestDto request, @AuthenticationPrincipal UserDetails currentUser) {
+        if (currentUser == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        PostDto createdPost = postService.createPost(request, currentUser.getUsername());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto) {
-        PostDto post = postService.updatePost(postDto);
-        if (post == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(post);
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDto> updatePost(@PathVariable Integer id, @RequestBody @Valid UpdatePostRequestDto request, @AuthenticationPrincipal UserDetails currentUser) {
+        PostDto updatedPost = postService.updatePost(id, request, currentUser.getUsername());
+        return ResponseEntity.ok(updatedPost);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Integer id, @AuthenticationPrincipal UserDetails currentUser) {
+        postService.deletePost(id, currentUser.getUsername());
+        return ResponseEntity.noContent().build();
     }
 }

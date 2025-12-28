@@ -15,35 +15,17 @@ interface VoteBoxProps {
 
 function setVote(value: number, contentId: number, contentType: string, cookie: Cookie): void {
     fetch(
-        REQUEST_PREFIX + 'reaction/' + contentType + "/set",
+        REQUEST_PREFIX + 'reaction/' + contentType,
         {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': 'Bearer ' + cookie.token
+                ...(cookie?.token && { 'Authorization': 'Bearer ' + cookie.token })
             },
             body: JSON.stringify({
                 targetId: contentId,
                 username: cookie.username,
                 reaction: value
-            })
-        }
-    )
-}
-
-function clearVote(contentId: number, contentType: string, cookie: Cookie): void {
-    fetch(
-        REQUEST_PREFIX + 'reaction/' + contentType + "/remove",
-        {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': 'Bearer ' + cookie.token
-            },
-            body: JSON.stringify({
-                targetId: contentId,
-                username: cookie.username,
-                reaction: null
             })
         }
     )
@@ -62,7 +44,7 @@ export const VoteBoxComponent: React.FC<VoteBoxProps> = ({contentType, contentId
         if (userVote === value) {
             newVote = null;
             newScore = score - value;
-            clearVote(contentId, contentType, cookie);
+            setVote(0, contentId, contentType, cookie);
         }
 
         else if (userVote !== null) {

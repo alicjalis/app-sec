@@ -1,4 +1,4 @@
-package put.appsec.backend.dto;
+package put.appsec.backend.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

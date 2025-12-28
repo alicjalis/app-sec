@@ -15,36 +15,17 @@ export const AddCommentComponent: React.FC<CommentInputProps> = ({ postId, onCom
     const [loading, setLoading] = useState(false);
     const cookie = GetCookie();
 
-    async function getUserId() {
-        const response = await fetch(REQUEST_PREFIX + 'auth/whoami/', {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': 'Bearer ' + cookie.token
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data.id;
-        }
-        throw new Error("Could not fetch user ID");
-    }
-
     const handleSubmit = async () => {
         if (!text.trim()) return;
         setLoading(true);
 
         try {
-            const currentUserId = await getUserId();
-
             const payload = {
                 postId: postId,
-                userId: currentUserId,
                 content: text,
             };
 
-            const response = await fetch(REQUEST_PREFIX + 'comments/create', {
+            const response = await fetch(REQUEST_PREFIX + 'comments', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
