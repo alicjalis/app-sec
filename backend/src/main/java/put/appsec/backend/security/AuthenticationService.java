@@ -7,6 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ import put.appsec.backend.dto.auth.RegisterRequestDto;
 import put.appsec.backend.dto.user.UserDto;
 import put.appsec.backend.entity.ConfirmationToken;
 import put.appsec.backend.entity.User;
+import put.appsec.backend.entity.UserActivity;
 import put.appsec.backend.enums.ConfirmationRequestType;
 import put.appsec.backend.enums.UserType;
 import put.appsec.backend.exceptions.AccountNotEnabledException;
@@ -25,6 +27,7 @@ import put.appsec.backend.exceptions.InvalidTokenException;
 import put.appsec.backend.exceptions.UserAlreadyExistsException;
 import put.appsec.backend.mapper.UserMapper;
 import put.appsec.backend.repository.ConfirmationTokenRepository;
+import put.appsec.backend.repository.UserActivityRepository;
 import put.appsec.backend.repository.UserRepository;
 
 import java.time.LocalDateTime;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    private final UserActivityRepository userActivityRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
     private final JwtService jwtService;
@@ -79,27 +83,46 @@ public class AuthenticationService {
         return userMapper.toDto(savedEntity, savedEntity.getUsername());
     }
 
-    @Transactional
-    public LoginResponseDto login(LoginRequestDto request) {
+    @Transactional(noRollbackFor = AuthenticationException.class)
+    public LoginResponseDto login(LoginRequestDto request, String ipAddress, String userAgent) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+
+        UserActivity activity = userActivityRepository.findByUserId(user.getId()).orElse(new UserActivity());
+
+        if (activity.getUser() == null) activity.setUser(user);
+        if (activity.getFailedLoginAttempts() == null) activity.setFailedLoginAttempts(0);
 
         if (!user.isEnabled()) {
             throw new AccountNotEnabledException("Please confirm your email address first.");
         }
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+            );
 
-        String jwtToken = jwtService.generateToken(user);
+            activity.setFailedLoginAttempts(0);
+            activity.setLastLoginDate(LocalDateTime.now());
+            activity.setLastLoginIp(ipAddress);
+            activity.setLastUserAgent(userAgent);
+            userActivityRepository.save(activity);
 
-        return LoginResponseDto.builder()
-                .token(jwtToken)
-                .expiresIn(jwtService.getExpirationTime())
-                .username(user.getUsername())
-                .userType(user.getUserType())
-                .build();
+            String jwtToken = jwtService.generateToken(user);
+            return LoginResponseDto.builder()
+                    .token(jwtToken)
+                    .expiresIn(jwtService.getExpirationTime())
+                    .username(user.getUsername())
+                    .userType(user.getUserType())
+                    .build();
+
+        } catch (AuthenticationException e) {
+            int newFailCount = activity.getFailedLoginAttempts() + 1;
+            activity.setFailedLoginAttempts(newFailCount);
+
+            userActivityRepository.save(activity);
+            throw e;
+        }
     }
 
     @Transactional
@@ -135,6 +158,10 @@ public class AuthenticationService {
         }
 
         User user = token.getUser();
+        UserActivity activity = userActivityRepository.findByUserId(user.getId()).orElse(new UserActivity());
+        activity.setPasswordLastChangedDate(LocalDateTime.now());
+        userActivityRepository.save(activity);
+
         user.setPassword(encoder.encode(newPassword));
         userRepository.save(user);
 

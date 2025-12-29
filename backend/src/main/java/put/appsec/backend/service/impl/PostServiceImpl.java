@@ -11,9 +11,11 @@ import put.appsec.backend.dto.post.PostDto;
 import put.appsec.backend.dto.post.UpdatePostRequestDto;
 import put.appsec.backend.entity.Post;
 import put.appsec.backend.entity.User;
+import put.appsec.backend.entity.UserActivity;
 import put.appsec.backend.exceptions.ResourceNotFoundException;
 import put.appsec.backend.mapper.PostMapper;
 import put.appsec.backend.repository.PostRepository;
+import put.appsec.backend.repository.UserActivityRepository;
 import put.appsec.backend.repository.UserRepository;
 import put.appsec.backend.service.PostService;
 
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
+    private final UserActivityRepository userActivityRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
@@ -70,6 +73,8 @@ public class PostServiceImpl implements PostService {
 
         Post savedPost = postRepository.save(post);
 
+        updateLastPostActivity(author);
+
         return postMapper.toDto(savedPost, authorUsername);
     }
 
@@ -110,5 +115,13 @@ public class PostServiceImpl implements PostService {
 
         post.setIsDeleted(true);
         postRepository.save(post);
+    }
+
+    private void updateLastPostActivity(User author) {
+        UserActivity activity = userActivityRepository.findByUserId(author.getId()).orElse(new UserActivity());
+        if (activity.getUser() == null) activity.setUser(author);
+
+        activity.setLastPostDate(LocalDateTime.now());
+        userActivityRepository.save(activity);
     }
 }

@@ -8,7 +8,7 @@ import {handleApiError} from "../utils/errorHandler.ts";
 import {useSearchParams} from "react-router-dom";
 
 type FormData = {
-    password: string;
+    newPassword: string;
     confirmPassword: string;
 };
 
@@ -25,7 +25,7 @@ function PasswordResetPage(){
 
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token");
-    const passwordValue = watch("password");
+    const passwordValue = watch("newPassword");
     const [isResetSuccessful, setisResetSuccessful] = useState(false);
 
     const [apiError, setApiError] = useState<string | null>(null);
@@ -88,7 +88,7 @@ function PasswordResetPage(){
                     <TextField
                         label="Password"
                         type="password"
-                        {...register("password", {
+                        {...register("newPassword", {
                             required: "Password is required",
                             validate: (value) => {
                                 if (!value) return true;
@@ -101,8 +101,8 @@ function PasswordResetPage(){
                         })}
                         disabled={isSubmitting}
                         required
-                        error={!!errors.password}
-                        helperText={errors.password ? errors.password.message : null}
+                        error={!!errors.newPassword}
+                        helperText={errors.newPassword ? errors.newPassword.message : null}
                     />
 
                     {passwordValue && (
@@ -118,7 +118,7 @@ function PasswordResetPage(){
                         {...register("confirmPassword", {
                             required: "Rewrite password",
                             validate: (value) =>
-                                value === getValues('password') || "Passwords must be the same",
+                                value === getValues('newPassword') || "Passwords must be the same",
                         })}
                         disabled={isSubmitting}
                         required
