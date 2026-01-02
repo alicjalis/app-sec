@@ -17,6 +17,7 @@ import put.appsec.backend.mapper.PostMapper;
 import put.appsec.backend.repository.PostRepository;
 import put.appsec.backend.repository.UserActivityRepository;
 import put.appsec.backend.repository.UserRepository;
+import put.appsec.backend.security.CaptchaService;
 import put.appsec.backend.service.PostService;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
+    private final CaptchaService captchaService;
     private final UserActivityRepository userActivityRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -59,6 +61,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto createPost(CreatePostRequestDto request, String authorUsername) {
+        if (!captchaService.verify(request.getRecaptchaToken())) {
+            throw new IllegalArgumentException("Captcha verification failed.");
+        }
+
         User author = userRepository.findByUsername(authorUsername)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 

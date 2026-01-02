@@ -16,6 +16,7 @@ import {useState} from "react";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {GetCookie} from "../cookie/GetCookie.tsx";
 import {useNavigate} from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function UploadPage() {
     const cookie = GetCookie();
@@ -24,6 +25,7 @@ function UploadPage() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,12 +48,17 @@ function UploadPage() {
             alert("Please provide both a title and an image");
             return;
         }
+        if (!captchaToken) {
+            alert("Please verify that you are not a robot");
+            return;
+        }
 
         setUploading(true);
 
         try {
             const formData = new FormData();
             formData.append('file', selectedFile);
+            formData.append('recaptchaToken', captchaToken);
 
             const imageResponse = await fetch(REQUEST_PREFIX + 'media/upload', {
                 method: 'POST',
@@ -75,6 +82,7 @@ function UploadPage() {
                 body: JSON.stringify({
                     title: title,
                     contentUri: uploadedImageUrl,
+                    recaptchaToken: captchaToken,
                 })
             });
 
@@ -184,6 +192,14 @@ function UploadPage() {
                                         </Button>
                                     </>
                                 )}
+                            </Box>
+
+                            {/* CAPTCHA */}
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <ReCAPTCHA
+                                    sitekey="6LciDD4sAAAAANXmrbYc4bSHWBqTwCoYnnx-f_WE"
+                                    onChange={(token) => setCaptchaToken(token)}
+                                />
                             </Box>
 
                             {/* SUBMIT BUTTON */}

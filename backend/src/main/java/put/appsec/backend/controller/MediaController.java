@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import put.appsec.backend.exceptions.FileStorageException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +27,7 @@ public class MediaController {
         try {
             String contentType = file.getContentType();
             if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
-                return ResponseEntity.badRequest().body("Invalid file type. Only images and videos allowed.");
+                throw new FileStorageException("Invalid file type. Only images and videos allowed.");
             }
 
             Path uploadPath = Paths.get(UPLOAD_DIR);
@@ -42,7 +43,7 @@ public class MediaController {
             return ResponseEntity.ok(fileName);
 
         } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Could not upload image: " + e.getMessage());
+            throw new FileStorageException("Could not store file. " + e.getMessage());
         }
     }
 }

@@ -10,4 +10,7 @@ public class CreatePostRequestDto {
 
     @NotBlank
     private String contentUri;
+
+    @NotBlank
+    private String recaptchaToken;
 }
