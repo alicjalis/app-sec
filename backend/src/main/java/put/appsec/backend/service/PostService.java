@@ -7,7 +7,7 @@ import put.appsec.backend.dto.post.UpdatePostRequestDto;
 import java.util.List;
 
 public interface PostService {
-    List<PostDto> getAllPosts(String viewerUsername);
+    List<PostDto> getAllPosts(String viewerUsername, int page, int size);
     PostDto getPostById(Integer id, String viewerUsername);
     List<PostDto> getPostsByUsername(String username, String viewerUsername);
     PostDto createPost(CreatePostRequestDto request, String authorUsername);

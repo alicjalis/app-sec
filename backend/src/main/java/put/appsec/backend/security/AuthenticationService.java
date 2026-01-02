@@ -159,6 +159,7 @@ public class AuthenticationService {
 
         User user = token.getUser();
         UserActivity activity = userActivityRepository.findByUserId(user.getId()).orElse(new UserActivity());
+        if (activity.getUser() == null) activity.setUser(user);
         activity.setPasswordLastChangedDate(LocalDateTime.now());
         userActivityRepository.save(activity);
 

@@ -21,9 +21,11 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts(@AuthenticationPrincipal UserDetails currentUser) {
+    public ResponseEntity<List<PostDto>> getAllPosts(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "10") int size,
+                                                     @AuthenticationPrincipal UserDetails currentUser) {
         String viewer = (currentUser != null) ? currentUser.getUsername() : null;
-        return ResponseEntity.ok(postService.getAllPosts(viewer));
+        return ResponseEntity.ok(postService.getAllPosts(viewer, page, size));
     }
 
     @GetMapping("/{id}")

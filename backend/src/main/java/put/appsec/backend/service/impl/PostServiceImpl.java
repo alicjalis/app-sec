@@ -1,6 +1,8 @@
 package put.appsec.backend.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,8 +38,9 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
 
     @Override
-    public List<PostDto> getAllPosts(String viewerUsername) {
-        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "uploadDate")).stream()
+    public List<PostDto> getAllPosts(String viewerUsername, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "uploadDate"));
+        return postRepository.findAll(pageable).getContent().stream()
                 .map(post -> postMapper.toDto(post, viewerUsername))
                 .collect(Collectors.toList());
     }

@@ -2,6 +2,7 @@ package put.appsec.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,8 +37,9 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**", "/posts/all", "/posts/user/**", "/images/**").permitAll()
-                        .requestMatchers("/**").permitAll() //uncomment to disable authentication
+                        .requestMatchers("/auth/**", "/media/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
+                        //.requestMatchers("/**").permitAll() //uncomment to disable authentication
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
