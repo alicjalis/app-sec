@@ -19,12 +19,7 @@ public class PostMapper {
     public PostDto toDto(Post post, String viewerUsername) {
         if (post == null) return null;
 
-        int score = 0;
-        if (post.getPostReactions() != null) {
-            score = post.getPostReactions().stream()
-                    .mapToInt(PostReaction::getReactionValue)
-                    .sum();
-        }
+        int score = post.getReactionScore() != null ? post.getReactionScore() : 0;
 
         Short userReaction = null;
         if (viewerUsername != null && post.getPostReactions() != null) {

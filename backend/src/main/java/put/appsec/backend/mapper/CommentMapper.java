@@ -10,7 +10,7 @@ public class CommentMapper {
     public CommentDto toDto(Comment comment, String viewerUsername) {
         if (comment == null) return null;
 
-        int score = 0;
+        int score = comment.getReactionScore() != null ? comment.getReactionScore() : 0;
         Short myReaction = null;
         String finalContent = comment.getContent();
 

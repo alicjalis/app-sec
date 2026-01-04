@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,4 +34,7 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
     private List<CommentReaction> commentReactions;
+
+    @Formula("(SELECT COALESCE(SUM(cr.reaction_value), 0) FROM comment_reactions cr WHERE cr.comment_id = id)")
+    private Integer reactionScore;
 }
