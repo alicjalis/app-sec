@@ -1,4 +1,4 @@
 # app-sec
 
-## deplyment
-docker compose up --build
+## deployment
+docker compose --profile fullstack up
