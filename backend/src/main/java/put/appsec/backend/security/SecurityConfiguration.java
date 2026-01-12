@@ -33,8 +33,9 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**", "/media/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/posts/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/media/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts").permitAll()
                         //.requestMatchers("/**").permitAll() //uncomment to disable authentication
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

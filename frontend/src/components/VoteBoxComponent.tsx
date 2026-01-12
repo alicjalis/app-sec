@@ -14,6 +14,8 @@ interface VoteBoxProps {
 }
 
 function setVote(value: number, contentId: number, contentType: string, cookie: Cookie): void {
+    if (!cookie || !cookie.username) return;
+
     fetch(
         REQUEST_PREFIX + 'reaction/' + contentType,
         {
@@ -37,6 +39,11 @@ export const VoteBoxComponent: React.FC<VoteBoxProps> = ({contentType, contentId
     const cookie = GetCookie();
 
     const handleVote = (type: 'up' | 'down') => {
+        if (!cookie || !cookie.logged) {
+            alert("Log in to vote.");
+            return;
+        }
+
         const value = type === 'up' ? 1 : -1;
         let newVote: number | null = value;
         let newScore = score;
@@ -59,7 +66,6 @@ export const VoteBoxComponent: React.FC<VoteBoxProps> = ({contentType, contentId
 
         setUserVote(newVote);
         setScore(newScore);
-
     };
 
     return (

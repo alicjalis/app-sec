@@ -1,6 +1,7 @@
 package put.appsec.backend.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,9 +39,17 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
 
     @Override
-    public List<PostDto> getAllPosts(String viewerUsername, int page, int size) {
+    public List<PostDto> getAllPosts(String viewerUsername, int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "uploadDate"));
-        return postRepository.findAll(pageable).getContent().stream()
+
+        Page<Post> postsPage;
+        if (search != null && !search.isBlank()) {
+            postsPage = postRepository.findByTitleContainingIgnoreCase(search, pageable);
+        } else {
+            postsPage = postRepository.findAll(pageable);
+        }
+
+        return postsPage.getContent().stream()
                 .map(post -> postMapper.toDto(post, viewerUsername))
                 .collect(Collectors.toList());
     }

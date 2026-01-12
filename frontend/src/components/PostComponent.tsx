@@ -60,7 +60,13 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
 
                 <VoteBoxComponent contentType={"post"} contentId={post.id} initialUserVote={post.userReaction} initialScore={post.reactionScore} />
 
-                <Box sx={{width: "100%", cursor: 'pointer'}} onClick={() => { navigate("/post/" + post.id) }}>
+                <Box sx={{width: "100%", cursor: cookie.logged ? 'pointer' : 'default'}} onClick={() => {
+                    if (cookie.logged) {
+                    navigate("/post/" + post.id);
+                } else {
+                    alert("Log in to see details.");
+                }
+                }}>
                     <Typography variant="h6" component="div" noWrap ml={2}>
                         {post.title}
                     </Typography>
