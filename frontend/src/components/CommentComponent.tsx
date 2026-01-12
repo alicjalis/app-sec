@@ -71,7 +71,7 @@ export const CommentComponent: React.FC<CommentProps> = ({ postComment }) => {
                             </Typography>
                         </Stack>
 
-                        {cookie.userType === UserType.ADMIN && (
+                        {(cookie.userType === UserType.ADMIN || cookie.username === postComment.author) && (
                             <IconButton size="small" onClick={handleDelete} aria-label="delete">
                                 <DeleteIcon fontSize="small" />
                             </IconButton>

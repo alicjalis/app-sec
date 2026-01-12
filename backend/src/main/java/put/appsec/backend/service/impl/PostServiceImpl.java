@@ -118,7 +118,7 @@ public class PostServiceImpl implements PostService {
 
         boolean isAdmin = requester.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
-        if (!isAdmin) {
+        if (!isAdmin && !post.getUser().getUsername().equals(requesterUsername)) {
             throw new AccessDeniedException("You do not have permission to delete this post");
         }
 

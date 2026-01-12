@@ -73,7 +73,7 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
                         </Typography>
                     )}
 
-                    {cookie.userType == UserType.ADMIN && (
+                    {(cookie.userType == UserType.ADMIN || cookie.username === post.author) && (
                         <IconButton
                             onClick={handleDelete}
                             color="error"
