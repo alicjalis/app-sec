@@ -6,7 +6,7 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: nok
+      POSTGRES_PASSWORD: nokWasNotSecureEnough0_o
       POSTGRES_DB: appsec
     ports:
       - "5432:5432"
@@ -30,6 +30,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: backend:latest
     container_name: backend
     restart: unless-stopped
     profiles: ["fullstack"]
@@ -38,7 +39,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appsec
       SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: nok
+      SPRING_DATASOURCE_PASSWORD: nokWasNotSecureEnough0_o
       SPRING_MAIL_HOST: mailpit
       SPRING_MAIL_PORT: 1025
       RECAPTCHA_SECRET_KEY: ${RECAPTCHA_SECRET_KEY}
@@ -54,6 +55,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: frontend:latest
     container_name: frontend
     restart: unless-stopped
     profiles: ["fullstack"]

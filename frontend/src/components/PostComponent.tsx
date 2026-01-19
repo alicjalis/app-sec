@@ -1,5 +1,5 @@
 import type {Post} from "../model/Post.tsx";
-import React, { useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Box, Card, CardContent, CardMedia, Divider, IconButton, Stack, Typography} from "@mui/material";
 import {REQUEST_PREFIX} from "../environment/Environment.tsx";
 import {VoteBoxComponent} from "./VoteBoxComponent.tsx";
@@ -23,6 +23,32 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
 
     const [commentsList, setCommentsList] = useState<PostComment[]>(post.comments || []);
     const [isDeleted, setIsDeleted] = useState(post.isDeleted);
+
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+        const videoElement = videoRef.current;
+        if (!videoElement) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) {
+                    videoElement.pause();
+                }
+            },
+            {
+                threshold: 0
+            }
+        );
+
+        observer.observe(videoElement);
+
+        return () => {
+            if (videoElement) {
+                observer.unobserve(videoElement);
+            }
+        };
+    }, []);
 
     const handleNewComment = (newComment: PostComment) => {
         setCommentsList([...commentsList, newComment]);
@@ -94,10 +120,11 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
             {post.contentUri && (post.contentUri.endsWith('.mp4')) ? (
                 <CardMedia
                     component="video"
-                    src={REQUEST_PREFIX + "media/" + post.contentUri}
+                    image={REQUEST_PREFIX + "media/" + post.contentUri}
+                    ref={videoRef}
                     controls
                     onLoadedMetadata={(e: React.SyntheticEvent<HTMLVideoElement>) => {
-                        e.currentTarget.volume = 0.5;
+                        e.currentTarget.volume = 0.25;
                     }}
                     sx={{
                         height: 500,
