@@ -127,7 +127,7 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
                         e.currentTarget.volume = 0.25;
                     }}
                     sx={{
-                        height: 500,
+                        maxHeight: displayComments ? '100%' : 700,
                         width: '100%',
                         objectFit: 'contain',
                         bgcolor: 'black'
@@ -139,7 +139,7 @@ export const PostComponent: React.FC<PostComponentProps> = ({ post, displayUsern
                     image={REQUEST_PREFIX + "media/" + post.contentUri}
                     sx={{
                         objectFit: 'cover',
-                        maxHeight: 500
+                        maxHeight: displayComments ? '100%' : 700,
                     }}
                 />
             )}
