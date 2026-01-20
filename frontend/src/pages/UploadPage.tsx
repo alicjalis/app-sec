@@ -173,7 +173,7 @@ function UploadPage() {
                                         {/* Upload Placeholder */}
                                         <CloudUploadIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
                                         <Typography color="text.secondary">
-                                            Drag and drop or click to upload
+                                            Click to upload
                                         </Typography>
 
                                         {/* Hidden Input + Label Button */}
